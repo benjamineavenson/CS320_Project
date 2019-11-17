@@ -1,0 +1,29 @@
+body{
+  background-color: #326fa8;
+}
+.container{
+  background-color: #ffffff;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+#date-select{
+  margin-left: 10px;
+}
+.date-header{
+  color: #ffffff;
+  background-color: #343434;
+  font-size: 1.5em;
+  width: 100%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  margin-bottom: 10px;
+}
+.header{
+  color: #ffffff;
+  background-color: #343434;
+  font-size: 1.2em;
+}
+.align-right{
+  text-align: right;
+}
+
