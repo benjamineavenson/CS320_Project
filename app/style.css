@@ -1,10 +1,16 @@
 body{
   background-color: #326fa8;
+  vertical-align: center;
 }
 .container{
   background-color: #ffffff;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+.container.form{
+  width: fit-content;
+  padding: 10px;
+
 }
 #date-select{
   margin-left: 10px;
@@ -30,7 +36,11 @@ body{
   border-top-right-radius: 5px;
   margin-bottom: 10px;
 }
+.login.header{
+  font-size: 3em;
+  padding: 15px;
+  text-align: center;
+}
 .align-right{
   text-align: right;
 }
-

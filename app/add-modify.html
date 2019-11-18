@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Add/Modify Event</title>
+  <title>Calendar</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script type="text/javascript"
           src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="ui container" style="background-color: white; padding: 10px">
+<div class="ui container">
   <div class="ui top attached menu">
     <a class="item"><i class="user icon"></i> User Profile</a>
     <div class="ui right menu">
@@ -17,26 +18,19 @@
     </div>
   </div>
   <div class="column">
-
     <div class="row">
       <div class="header" style="padding-left:5px">Add/Modify Event</div>
     </div>
-
     <div class="row">
       Event Name:
       <Input placeholder="Event Name">
     </div>
-
     <div class="row">
       Event Room:
       <Input placeholder="Room Name">
     </div>
-
     <div class="row">
-
     </div>
-
-    <div class="row">
       Event Date:
       <select class="ui dropdown">
         <option value="1">January</option>
@@ -85,8 +79,7 @@
         <option value="30">30</option>
         <option value="31">31</option>
       </select>
-      <input placeholder="Year" style="width: 40px">
-    </div>
+    <div class="ui input"><input class="ui input" placeholder="Year" style="width: 70px;"></div>
 
     <div class="row">
       Start Time:
@@ -167,6 +160,10 @@
         <option value="58">27</option>
         <option value="59">28</option>
       </select>
+      <select class="ui dropdown">
+        <option value="0">AM</option>
+        <option value="1">PM</option>
+      </select>
     </div>
     <div class="row">
       End Time:
@@ -246,6 +243,10 @@
         <option value="57">26</option>
         <option value="58">27</option>
         <option value="59">28</option>
+      </select>
+      <select class="ui dropdown">
+        <option value="0">AM</option>
+        <option value="1">PM</option>
       </select>
     </div>
 
