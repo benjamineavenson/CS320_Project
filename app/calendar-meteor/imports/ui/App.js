@@ -1,6 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { events } from '../database.js';
 
 export default class App extends Component{
   constructor(props){
@@ -575,4 +576,61 @@ export default class App extends Component{
         );
     }
   }
+}
+
+//Database data structures
+
+class event {
+  constructor() {
+    this.name = "";
+    this.startTime = new Date;
+    this.endTime = new Date;
+    this.room = "";
+    this.createdBy = "";
+    this.lastModifiedBy = "";
+  }
+}
+
+class collectionEvent {
+  constructor() {
+    this.id = 0;
+    this.event = new event();
+  }
+}
+
+//JS database handle functions
+function createEvent(name, startTime, endTime, room, createdBy) {
+  let newEvent = new event();
+  newEvent.name = name;
+  newEvent.startTime = startTime;
+  newEvent.endTime = endTime;
+  newEvent.room = room;
+  newEvent.createdBy = createdBy;
+  newEvent.lastModifiedBy = createdBy;
+  events.insert(newEvent);
+}
+
+function deleteEvent(event) {
+  events.remove(event);
+}
+
+function modifyEvent(event) {
+  events.update(event, event._id)
+}
+
+function modifyEventFetch(event){
+  return events.find(event).fetch();
+}
+
+function displayEvents(day) {
+  let allEvents = events.find().fetch();
+  let dayEvents = new event[allEvents.length];
+  let eventIndex = 0;
+  for (let index = 0; index <= allEvents.length; index++){
+    if ((allEvents[index].startDate.getTime() > day.getTime()) &&
+        (allEvents[index].endDate.getTime() < day.getTime() + (8.64*10^7))){
+      dayEvents[eventIndex++] = allEvents[index]
+    }
+  }
+  return dayEvents;
 }
