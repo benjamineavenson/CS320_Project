@@ -1,5 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
+import { events } from '../imports/database.js';
 
 export default class App extends Component{
   constructor(props){
@@ -532,4 +533,52 @@ export default class App extends Component{
         );
     }
   }
+}
+
+//Database data structures
+
+class event {
+  constructor() {
+    this.name = "";
+    this.startTime = new Date;
+    this.endTime = new Date;
+    this.room = "";
+    this.createdBy = "";
+    this.lastModifiedBy = "";
+  }
+}
+
+class collectionEvent {
+  constructor() {
+    this.id = 0;
+    this.event = new event();
+  }
+}
+
+//JS database handle functions
+function createEvent(name, startTime, endTime, room, createdBy) {
+  let newEvent = new event();
+  newEvent.name = name;
+  newEvent.startTime = startTime;
+  newEvent.endTime = endTime;
+  newEvent.room = room;
+  newEvent.createdBy = createdBy;
+  newEvent.lastModifiedBy = createdBy;
+  events.insert(newEvent);
+}
+
+function deleteEvent(event) {
+  events.remove(event);
+}
+
+function modifyEvent(event) {
+
+}
+
+function modifyEventFetch(event){
+  var findEvent
+}
+
+function displayEvents(day) {
+
 }
