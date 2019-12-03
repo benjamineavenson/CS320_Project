@@ -30,17 +30,26 @@ export default class App extends Component{
     const eventMonth = ReactDOM.findDOMNode(this.refs.eventDateMonth).value.trim();
     const eventDay = ReactDOM.findDOMNode(this.refs.eventDateDay).value.trim();
     const eventYear = ReactDOM.findDOMNode(this.refs.eventDateYear).value.trim();
-    const eventStartHour = ReactDOM.findDOMNode(this.refs.eventStartHour).value.trim();
+    let eventStartHour = ReactDOM.findDOMNode(this.refs.eventStartHour).value.trim();
     const eventStartMinute = ReactDOM.findDOMNode(this.refs.eventStartMinute).value.trim();
     const eventStartPM = ReactDOM.findDOMNode(this.refs.eventStartPM).value.trim();
-    const eventEndHour = ReactDOM.findDOMNode(this.refs.eventEndHour).value.trim();
+    let eventEndHour = ReactDOM.findDOMNode(this.refs.eventEndHour).value.trim();
     const eventEndMinute = ReactDOM.findDOMNode(this.refs.eventEndMinute).value.trim();
     const eventEndPM = ReactDOM.findDOMNode(this.refs.eventEndPM).value.trim();
 
-    //still have to fix the hour representation...
+    if((eventStartHour == 12) && (eventStartPM == 0)){
+      eventStartHour = 0;
+    }else if(eventStartPM == 1){
+      eventStartHour += 12;
+    }
+    if((eventEndHour == 12) && (eventEndPM == 0)){
+      eventEndHour = 0;
+    }else if(eventEndPM == 1){
+      eventEndHour += 12;
+    }
 
-    const startDate = new Date(eventYear, eventMonth, eventDay, (eventStartHour - 1) + (12*eventStartPM), eventStartMinute);
-    const endDate = new Date(eventYear, eventMonth, eventDay, (eventEndHour - 1) + (12*eventEndPM), eventEndMinute);
+    const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
+    const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
 
     //do stuff with the captured info.....
     console.log(startDate);
