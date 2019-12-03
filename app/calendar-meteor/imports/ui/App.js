@@ -54,8 +54,7 @@ export default class App extends Component{
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
 
     //do stuff with the captured info.....
-    console.log(startDate);
-    console.log(endDate);
+    createEvent(eventName, startDate, endDate, eventRoom, "dummyUsername");
     this.handlePageChange(1);
   }
 
@@ -532,16 +531,16 @@ export default class App extends Component{
               <div className="header">Change My Password</div>
               <div className="ui centered grid">
                 <div className="five wide column">
-                  <p>
-                    <div className="ui input"><input placeholder="Your old password"/></div>
-                  </p>
-                  <p>
-                    <div className="ui input"><input placeholder="Your new password"/></div>
-                  </p>
-                  <p>
-                    <div className="ui input"><input placeholder="Reenter new password"/></div>
-                    <button className="ui button">Submit</button>
-                  </p>
+
+                  <div className="ui input"><input placeholder="Your old password"/></div>
+
+
+                  <div className="ui input"><input placeholder="Your new password"/></div>
+
+
+                  <div className="ui input"><input placeholder="Reenter new password"/></div>
+                  <button className="ui button">Submit</button>
+
                 </div>
               </div>
             </div>
@@ -602,14 +601,15 @@ class user {
 //JS database handle functions
 
 function createEvent(name, startTime, endTime, room, createdBy) {
-/*  let newEvent = new event();
-  newEvent.name = name;
-  newEvent.startTime = startTime;
-  newEvent.endTime = endTime;
-  newEvent.room = room;
-  newEvent.createdBy = createdBy;
-  newEvent.lastModifiedBy = createdBy;*/
-  events.insert({name, startTime, endTime, room, createdBy, createdBy});
+  events.insert({
+    name: name,
+    startTime: startTime,
+    endTime: endTime,
+    room: room,
+    createdBy: createdBy,
+    lastModifiedBy: createdBy,
+  });
+
 }
 
 function deleteEvent(event) {
