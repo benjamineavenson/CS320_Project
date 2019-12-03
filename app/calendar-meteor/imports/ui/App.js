@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { events } from '../imports/database.js';
+import { events } from '../database.js';
 
 export default class App extends Component{
   constructor(props){
@@ -572,13 +572,22 @@ function deleteEvent(event) {
 }
 
 function modifyEvent(event) {
-
+  events.update(event, event._id)
 }
 
 function modifyEventFetch(event){
-  var findEvent
+  return events.find(event).fetch();
 }
 
 function displayEvents(day) {
-
+  let allEvents = events.find().fetch();
+  let dayEvents = new event[allEvents.length];
+  let eventIndex = 0;
+  for (let index = 0; index <= allEvents.length; index++){
+    if ((allEvents[index].startDate.getTime() > day.getTime()) &&
+        (allEvents[index].endDate.getTime() < day.getTime() + (8.64*10^7))){
+      dayEvents[eventIndex++] = allEvents[index]
+    }
+  }
+  return dayEvents;
 }
