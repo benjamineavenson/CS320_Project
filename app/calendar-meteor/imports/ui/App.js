@@ -2,6 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { events } from '../database.js';
+import { users } from '../database.js';
 
 export default class App extends Component{
   constructor(props){
@@ -591,23 +592,24 @@ class event {
   }
 }
 
-class collectionEvent {
+class user {
   constructor() {
-    this.id = 0;
-    this.event = new event();
+    this.username = "";
+    this.password = "";
   }
 }
 
 //JS database handle functions
+
 function createEvent(name, startTime, endTime, room, createdBy) {
-  let newEvent = new event();
+/*  let newEvent = new event();
   newEvent.name = name;
   newEvent.startTime = startTime;
   newEvent.endTime = endTime;
   newEvent.room = room;
   newEvent.createdBy = createdBy;
-  newEvent.lastModifiedBy = createdBy;
-  events.insert(newEvent);
+  newEvent.lastModifiedBy = createdBy;*/
+  events.insert({name, startTime, endTime, room, createdBy, createdBy});
 }
 
 function deleteEvent(event) {
@@ -633,4 +635,25 @@ function displayEvents(day) {
     }
   }
   return dayEvents;
+}
+
+//user database functions
+
+function addUser(username, password){
+  let user = new user();
+  user.username = username;
+  user.password = password;
+  users.insert(user);
+}
+
+function getUser(username) {
+  let allUsers = users.find().fetch();
+  for (let index = 0; index <= allUsers.length; index++){
+    if (allUsers[index].username === username){return allUsers[index]}
+  }
+  return null;
+}
+
+function updateUser(user){
+  users.update(user, user._id)
 }
