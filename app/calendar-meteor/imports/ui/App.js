@@ -551,4 +551,3 @@ function updateUser(user){
   users.update(user, user._id)
 }
 
-export{displayEvents}
