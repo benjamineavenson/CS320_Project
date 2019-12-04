@@ -33,19 +33,25 @@ describe("calendar-meteor", function () {
       it('Should add event without error', function(){
         const startTime = new Date(2001, 1,1, 5);
         const endTime = new Date(2001, 1, 1, 6);
-        createEvent("testEvent", startTime, endTime, 'test room', 'test user')
-        const testEvent = createTestEvent("testEvent", startTime, endTime, 'test room', 'test user');
-        assert.equal(events.find(testEvent).fetch(), testEvent, '');
+        createEvent("testEvent1", startTime, endTime, 'test room', 'test user');
+        const testEvent = createTestEvent('testEvent1', startTime, endTime, 'test room', 'test user');
+        const storedEvent = events.find(testEvent).fetch();
+        assert.equal(storedEvent[0].name, 'testEvent1');
+        assert.equal(storedEvent[0].room, 'test room');
+        assert.equal(storedEvent[0].createdBy, 'test user');
+        assert.equal(storedEvent[0].lastModifiedBy, 'test user');
       });
     });
     describe('Remove Event in database', function(){
       it('Should remove add and remove an event without error', function(){
         const startTime = new Date(2001, 1,1, 5);
         const endTime = new Date(2001, 1, 1, 6);
-        createEvent("testEvent2", startTime, endTime, 'test room', 'test user');
-        const testEvent = createTestEvent('testEvent2', new Date(1000),
-            new Date(2000), 'test room', 'test user');
+        const testEvent = createTestEvent('testEvent2', startTime, endTime, 'test room', 'test user');
+        events.insert(testEvent);
+        const eventBefore = events.find(testEvent).fetch();
         deleteEvent(testEvent);
+        const eventAfter = events.find(testEvent).fetch();
+        assert.notDeepEqual(eventBefore, eventAfter);
       });
     });
     describe('Modify event in database', function(){
@@ -54,9 +60,14 @@ describe("calendar-meteor", function () {
         const endTime = new Date(2001, 1, 1, 6);
         createEvent("testEvent3", startTime, endTime, 'test room', 'test user');
         const testEvent = createTestEvent('testEvent3', startTime, endTime, 'test room', 'test user');
+        let storedEvent = modifyEventFetch(testEvent);
         const modEvent = createTestEvent('testEvent4', startTime, endTime, 'test room', 'test user');
-        modifyEvent(modEvent);
-        assert.equal(events.find(modEvent).fetch(), modEvent);
+        modifyEvent(modEvent, storedEvent[0]._id);
+        storedEvent = events.find(storedEvent[0]._id).fetch();
+        assert.equal(storedEvent[0].name, 'testEvent4');
+        assert.equal(storedEvent[0].room, 'test room');
+        assert.equal(storedEvent[0].createdBy, 'test user');
+        assert.equal(storedEvent[0].lastModifiedBy, 'test user');
       });
     });
     describe('Display events functionality', function(){
@@ -69,9 +80,10 @@ describe("calendar-meteor", function () {
         createEvent("testEvent8", startTime, endTime, 'test room', 'test user');
         createEvent("testEvent9", startTime, endTime, 'test room', 'test user');
         const eventDisplay = displayEvents(new Date(2001, 1, 1));
-        createEvent("testEvent10", new Date(2001, 1, 2, 5),
-            new Date(2001, 1, 2, 6), 'test room', 'test user');
-        assert.equal(displayEvents(2001, 1, 1), eventDisplay, '');
+        createEvent("testEvent10", new Date(2001, 1, 3, 5),
+            new Date(2001, 1, 3, 6), 'test room', 'test user');
+        const reDisplay = displayEvents(new Date(2001, 1, 1));
+        assert.deepEqual(reDisplay, eventDisplay);
       })
     })
   });
@@ -82,9 +94,20 @@ function createTestEvent(name, startTime, endTime, room, user){
   const testEvent = new event();
   testEvent.name = name;
   testEvent.startTime = startTime;
-  testEvent.endtime = endTime;
+  testEvent.endTime = endTime;
   testEvent.room = room;
   testEvent.createdBy = user;
   testEvent.lastModifiedBy = user;
+  return testEvent;
+}
+
+function convertToDoc(input) {
+  const testEvent = new event();
+  testEvent.name = input.name;
+  testEvent.startTime = input.startTime;
+  testEvent.endTime = input.endTime;
+  testEvent.room = input.room;
+  testEvent.createdBy = input.createdBy;
+  testEvent.lastModifiedBy = input.lastModifiedBy;
   return testEvent;
 }

@@ -509,8 +509,8 @@ function deleteEvent(event) {
   events.remove(event);
 }
 
-function modifyEvent(event) {
-  events.update(event._id, event);
+function modifyEvent(event, id) {
+  events.update(id, event);
 }
 
 function modifyEventFetch(event){
@@ -518,13 +518,14 @@ function modifyEventFetch(event){
 }
 
 function displayEvents(day) {
-  let allEvents = events.find().fetch();
+  const allEvents = events.find().fetch();
   let dayEvents = [];
-  let eventIndex = 0;
-  for (let event in allEvents){
-    if (event.startDate !== undefined){
-      if ((event.startDate.getDay === day.getDay())){
-        dayEvents[eventIndex++] = allEvents[index]
+  for (let event in allEvents) {
+    if (allEvents[event].startTime !== undefined) {
+      if (allEvents[event].startTime.getDay() == day.getDay() &&
+      allEvents[event].startTime.getFullYear() == day.getFullYear() &&
+      allEvents[event].startTime.getMonth() == day.getMonth()) {
+        dayEvents.push(allEvents[event]);
       }
     }
   }
