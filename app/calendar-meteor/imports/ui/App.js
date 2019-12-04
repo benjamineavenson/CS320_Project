@@ -616,7 +616,7 @@ function deleteEvent(event) {
 }
 
 function modifyEvent(event) {
-  events.update(event, event._id)
+  events.update(event._id, event);
 }
 
 function modifyEventFetch(event){
@@ -625,12 +625,13 @@ function modifyEventFetch(event){
 
 function displayEvents(day) {
   let allEvents = events.find().fetch();
-  let dayEvents = new event[allEvents.length];
+  let dayEvents = [];
   let eventIndex = 0;
-  for (let index = 0; index <= allEvents.length; index++){
-    if ((allEvents[index].startDate.getTime() > day.getTime()) &&
-        (allEvents[index].endDate.getTime() < day.getTime() + (8.64*10^7))){
-      dayEvents[eventIndex++] = allEvents[index]
+  for (let event in allEvents){
+    if (event.startDate !== undefined){
+      if ((event.startDate.getDay === day.getDay())){
+        dayEvents[eventIndex++] = allEvents[index]
+      }
     }
   }
   return dayEvents;
@@ -655,4 +656,9 @@ function getUser(username) {
 
 function updateUser(user){
   users.update(user, user._id)
+}
+
+export{
+  addUser, getUser, updateUser, displayEvents, modifyEvent, modifyEventFetch,
+    createEvent, deleteEvent, event, user
 }
