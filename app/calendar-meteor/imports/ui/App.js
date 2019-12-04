@@ -3,13 +3,21 @@ import { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { events } from '../database.js';
 import { users } from '../database.js';
+import Day from './Day.js'
 
 export default class App extends Component{
   constructor(props){
     super(props);
 
+    let start = new Date(Date.now());
+    start.setHours(0,0,0,0);
+    let end = new Date(Date.now());
+    end.setHours(0,0,0,0);
+
     this.state = {
       page: 0,
+      startDay: start,
+      endDay: end,
     };
   }
 
@@ -52,9 +60,32 @@ export default class App extends Component{
 
     const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
-    
+
     createEvent(eventName, startDate, endDate, eventRoom, "dummyUsername");
     this.handlePageChange(1);
+  }
+
+
+  renderDays(){
+    const days = this.getDaysBetween(this.state.startDay, this.state.endDay);
+    return days.map((day) => (
+        <Day key={day.getTime()} date={day}/>
+    ));
+  }
+
+  getDaysBetween(start, end){
+    let output = [];
+    output.push(start);
+    let nextDay = new Date(start.getTime() + 1000*60*60*24);
+    while(nextDay.getTime() < end.getTime()){
+      output.push(nextDay);
+      nextDay = new Date(nextDay.getTime() + 1000*60*60*24);
+      console.log("nextDay: "+nextDay);
+    }
+    if(end.getTime() > start.getTime()){
+      output.push(end);
+    }
+    return(output);
   }
 
   render(){
@@ -200,144 +231,7 @@ export default class App extends Component{
                   </div>
                   <button className="ui basic button"><i className="calendar alternate icon"></i>Display</button>
                 </div>
-                <div className="sixteen wide column">
-                  <div className="date-header">January 1, 2020</div>
-                  <div className="ui grid">
-                    <div className="eight wide column">
-                      <div className="ui fluid card">
-                        <div className="header">Event Name A</div>
-                        <div className="ui grid">
-                          <div className="six wide column">
-                            <p className="align-right">Start Time:</p>
-                            <p className="align-right">End Time:</p>
-                            <p className="align-right">Room:</p>
-                          </div>
-                          <div className="five wide column">
-                            <p>2:00PM</p>
-                            <p>3:00PM</p>
-                            <p>Meeting Room A</p>
-                          </div>
-                          <div className="column">
-                            <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-                            <button className="ui red button"><i className="close icon"></i>Delete Event</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="eight wide column">
-                      <div className="ui fluid card">
-                        <div className="header">Event Name B</div>
-                        <div className="ui grid">
-                          <div className="six wide column">
-                            <p className="align-right">Start Time:</p>
-                            <p className="align-right">End Time:</p>
-                            <p className="align-right">Room:</p>
-                          </div>
-                          <div className="five wide column">
-                            <p>4:00PM</p>
-                            <p>5:00PM</p>
-                            <p>Meeting Room B</p>
-                          </div>
-                          <div className="column">
-                            <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-                            <button className="ui red button"><i className="close icon"></i>Delete Event</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="eight wide column">
-                      <div className="ui fluid card">
-                        <div className="header">Event Name C</div>
-                        <div className="ui grid">
-                          <div className="six wide column">
-                            <p className="align-right">Start Time:</p>
-                            <p className="align-right">End Time:</p>
-                            <p className="align-right">Room:</p>
-                          </div>
-                          <div className="five wide column">
-                            <p>1:00PM</p>
-                            <p>1:30PM</p>
-                            <p>Meeting Room B</p>
-                          </div>
-                          <div className="column">
-                            <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-                            <button className="ui red button"><i className="close icon"></i>Delete Event</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-
-                <div className="sixteen wide column">
-                  <div className="date-header">January 2, 2020</div>
-                  <div className="ui grid">
-                    <div className="eight wide column">
-                      <div className="ui fluid card">
-                        <div className="header">Event Name A</div>
-                        <div className="ui grid">
-                          <div className="six wide column">
-                            <p className="align-right">Start Time:</p>
-                            <p className="align-right">End Time:</p>
-                            <p className="align-right">Room:</p>
-                          </div>
-                          <div className="five wide column">
-                            <p>2:00PM</p>
-                            <p>3:00PM</p>
-                            <p>Meeting Room A</p>
-                          </div>
-                          <div className="column">
-                            <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-                            <button className="ui red button"><i className="close icon"></i>Delete Event</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="eight wide column">
-                      <div className="ui fluid card">
-                        <div className="header">Event Name B</div>
-                        <div className="ui grid">
-                          <div className="six wide column">
-                            <p className="align-right">Start Time:</p>
-                            <p className="align-right">End Time:</p>
-                            <p className="align-right">Room:</p>
-                          </div>
-                          <div className="five wide column">
-                            <p>4:00PM</p>
-                            <p>5:00PM</p>
-                            <p>Meeting Room B</p>
-                          </div>
-                          <div className="column">
-                            <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-                            <button className="ui red button"><i className="close icon"></i>Delete Event</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="eight wide column">
-                      <div className="ui fluid card">
-                        <div className="header">Event Name C</div>
-                        <div className="ui grid">
-                          <div className="six wide column">
-                            <p className="align-right">Start Time:</p>
-                            <p className="align-right">End Time:</p>
-                            <p className="align-right">Room:</p>
-                          </div>
-                          <div className="five wide column">
-                            <p>1:00PM</p>
-                            <p>1:30PM</p>
-                            <p>Meeting Room B</p>
-                          </div>
-                          <div className="column">
-                            <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-                            <button className="ui red button"><i className="close icon"></i>Delete Event</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {this.renderDays()}
               </div>
             </div>
         );
@@ -656,3 +550,5 @@ function getUser(username) {
 function updateUser(user){
   users.update(user, user._id)
 }
+
+export{displayEvents}
