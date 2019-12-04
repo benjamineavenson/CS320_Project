@@ -90,7 +90,7 @@ describe("calendar-meteor", function () {
 });
 
 //Test helper functions
-function createTestEvent(name, startTime, endTime, room, user){
+function createTestEvent (name, startTime, endTime, room, user) {
   const testEvent = new event();
   testEvent.name = name;
   testEvent.startTime = startTime;
@@ -98,16 +98,5 @@ function createTestEvent(name, startTime, endTime, room, user){
   testEvent.room = room;
   testEvent.createdBy = user;
   testEvent.lastModifiedBy = user;
-  return testEvent;
-}
-
-function convertToDoc(input) {
-  const testEvent = new event();
-  testEvent.name = input.name;
-  testEvent.startTime = input.startTime;
-  testEvent.endTime = input.endTime;
-  testEvent.room = input.room;
-  testEvent.createdBy = input.createdBy;
-  testEvent.lastModifiedBy = input.lastModifiedBy;
   return testEvent;
 }
