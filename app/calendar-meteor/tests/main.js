@@ -96,7 +96,6 @@ describe("calendar-meteor", function () {
     });
 
     //Event Error handling
-    events.remove({}); //clear events database before testing
     describe('Remove Event that does not exist', function() {
       it('Should return false if no event exists', function () {
         const startTime = new Date(2001, 1, 1, 1);
@@ -151,17 +150,16 @@ describe("calendar-meteor", function () {
         assert.notDeepEqual(newUser, gotUser);
         newUser = getUser('Test User 2.5');
         assert.equal(newUser.username, 'Test User 2.5');
-      })
-    })
+      });
+    });
 
     //User Error Handling
-    users.remove({}); //clear users database before testing
     describe('Add user that already exists', function() {
       it('Should return false', function() {
         addUser("testUser", 'password');
         assert.equal(addUser('testuser', 'otherpassword'), false);
-      })
-    })
+      });
+    });
 
   });
 });

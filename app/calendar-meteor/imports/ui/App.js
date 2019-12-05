@@ -611,7 +611,7 @@ function displayEvents(day) {
 
 //This function will add a user object to the users database
 function addUser(username, password){
-  if (getUser(username) != null) {
+  if (getUser(username) === null) {
     users.insert({
       username: username,
       password: password,
@@ -635,7 +635,7 @@ function getUser(username) {
 //  You cannot re-insert an object that has a _id parameter.
 //id comes from the user object returned from getUser
 function updateUser(upUser, id){
-  if (users.find(id).fetch()[0] === undefined) {
+  if (users.find(id).fetch()[0] !== undefined) {
     users.update(id, upUser);
     return true;
   }
