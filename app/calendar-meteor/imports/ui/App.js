@@ -19,6 +19,7 @@ export default class App extends Component{
       user: null,
       startDay: start,
       endDay: end,
+      eventMod: null,
     };
   }
 
@@ -59,7 +60,6 @@ export default class App extends Component{
     const username = ReactDOM.findDOMNode(this.refs.newUser).value.trim();
     const password = ReactDOM.findDOMNode(this.refs.newPassword).value.trim();
     const confirm = ReactDOM.findDOMNode(this.refs.confirmNewPassword).value.trim();
-    const email = ReactDOM.findDOMNode(this.refs.newEmail).value.trim();
 
     if(password === confirm){
       addUser(username, password);
@@ -74,12 +74,30 @@ export default class App extends Component{
 
     const user = getUser(this.state.user.username);
     if(old === user.password && myNew === confirm){
-      user.password = myNew;
-      updateUser(user);
+      console.log("we made it");
+      updateUser({
+        username: user.username,
+        password: myNew,
+      },
+          user._id);
     }
   }
 
+  handleDisplayChange(){
+    const startMonth = ReactDOM.findDOMNode(this.refs.displayStartMonth).value.trim();
+    const startDay = ReactDOM.findDOMNode(this.refs.displayStartDay).value.trim();
+    const startYear = ReactDOM.findDOMNode(this.refs.displayStartYear).value.trim();
+    const endMonth = ReactDOM.findDOMNode(this.refs.displayEndMonth).value.trim();
+    const endDay = ReactDOM.findDOMNode(this.refs.displayEndDay).value.trim();
+    const endYear = ReactDOM.findDOMNode(this.refs.displayEndYear).value.trim();
 
+    this.setState({
+      startDay: new Date(startYear, startMonth, startDay),
+      endDay: new Date(endYear, endMonth, endDay),
+    });
+
+
+  }
 
   handleNewEvent(){
     const eventName = ReactDOM.findDOMNode(this.refs.eventName).value.trim();
@@ -172,22 +190,22 @@ export default class App extends Component{
                 <div id="date-select" className="sixteen wide column">
                   <p>Display Events</p>
                   From
-                  <select className="ui dropdown">
+                  <select ref="displayStartMonth" className="ui dropdown">
                     <option value="">Month</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                   </select>
-                  <select className="ui dropdown">
+                  <select ref="displayStartDay" className="ui dropdown">
                     <option value="">Day</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -222,25 +240,25 @@ export default class App extends Component{
                     <option value="31">31</option>
                   </select>
                   <div className="ui input">
-                    <input placeholder="Year"/>
+                    <input ref="displayStartYear" placeholder="Year"/>
                   </div>
                   To
-                  <select className="ui dropdown">
+                  <select ref="displayEndMonth" className="ui dropdown">
                     <option value="">Month</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                   </select>
-                  <select className="ui dropdown">
+                  <select ref="displayEndDay" className="ui dropdown">
                     <option value="">Day</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -275,9 +293,9 @@ export default class App extends Component{
                     <option value="31">31</option>
                   </select>
                   <div className="ui input">
-                    <input placeholder="Year"/>
+                    <input ref="displayEndYear" placeholder="Year"/>
                   </div>
-                  <button className="ui basic button"><i className="calendar alternate icon"></i>Display</button>
+                  <button className="ui basic button" onClick={this.handleDisplayChange.bind(this)}><i className="calendar alternate icon"></i>Display</button>
                 </div>
                 {this.renderDays()}
               </div>
@@ -493,10 +511,6 @@ export default class App extends Component{
               <p>
                 <label>User Name: </label>
                 <input ref="newUser" placeholder="User Name"/>
-              </p>
-              <p>
-                <label>Email:</label>
-                <input ref="newEmail" placeholder="Email:"/>
               </p>
               <p>
                 <label>Password:</label>
