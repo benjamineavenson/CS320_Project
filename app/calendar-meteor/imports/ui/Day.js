@@ -1,23 +1,11 @@
 import React, { Component } from 'react';
-import { events } from '../database.js';
 import Event from './Event.js'
+import { displayEvents } from './App.js';
 
 export default class Day extends Component {
 
-  displayEvents(day) {
-    let allEvents = events.find().fetch();
-    let dayEvents = []
-    for (let index = 0; index < allEvents.length; index++){
-      if ((allEvents[index].startTime.getTime() > day.getTime()) &&
-          (allEvents[index].endTime.getTime() < (day.getTime() + (1000*60*60*24)))){
-        dayEvents.push(allEvents[index]);
-      }
-    }
-    return dayEvents;
-  }
-
   renderEvents(){
-    const events = this.displayEvents(this.props.date);
+    const events = displayEvents(this.props.date);
     if(events.length === 0){
       return(
           <p>No Events are Scheduled for this day.</p>
