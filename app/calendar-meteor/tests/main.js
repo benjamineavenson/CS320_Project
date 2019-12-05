@@ -6,11 +6,12 @@ import { deleteEvent } from '../imports/ui/App.js';
 import { modifyEventFetch } from '../imports/ui/App.js';
 import { modifyEvent } from '../imports/ui/App.js';
 import { event } from '../imports/ui/App.js';
-import { user } from '../imports/ui/App';
+import { user } from '../imports/ui/App.js';
 import { displayEvents } from '../imports/ui/App';
 import { addUser } from '../imports/ui/App';
 import { getUser } from '../imports/ui/App';
 import { updateUser } from '../imports/ui/App';
+
 
 //To run these tests, invoke the below command when launching meteor:
 //meteor test --full-app --driver-package meteortesting:mocha
@@ -35,6 +36,7 @@ describe("calendar-meteor", function () {
   //Meteor interface tests
   describe('Meteor Database Interface Tests', function(){
     events.remove({}); //clear events database before testing
+    //Event functions
     describe('Add Event to database:', function(){
       it('Should add event without error', function(){
         const startTime = new Date(2001, 1,1, 5);
@@ -55,7 +57,7 @@ describe("calendar-meteor", function () {
         const testEvent = createTestEvent('testEvent2', startTime, endTime, 'test room', 'test user');
         events.insert(testEvent);
         const eventBefore = events.find(testEvent).fetch();
-        deleteEvent(testEvent);
+        deleteEvent(eventBefore[0]._id);
         const eventAfter = events.find(testEvent).fetch();
         assert.notDeepEqual(eventBefore, eventAfter);
       });
@@ -92,7 +94,21 @@ describe("calendar-meteor", function () {
         assert.deepEqual(reDisplay, eventDisplay);
       });
     });
+    //Event Error handling
+    events.remove({}); //clear events database before testing
+    describe('Remove Event that does not exist', function() {
+      it('Should return false if no event exists', function () {
+        const startTime = new Date(2001, 1, 1, 1);
+        const endTime = new Date(2001, 1, 1, 2);
+        createEvent('deleteMe', startTime, endTime, 'deleteroom', 'me');
+        const testEvent = createTestEvent('deleteMe', startTime, endTime, 'deleteroom', 'me');
+        const removeEvent = modifyEventFetch(testEvent);
+        assert(deleteEvent(removeEvent));
+        assert(!deleteEvent(removeEvent));
+      });
+    });
 
+    //User functions
     users.remove({}); //clear users database before testing
     describe('Add user to database', function(){
       it('Should add a user with no issues', function(){
@@ -116,6 +132,8 @@ describe("calendar-meteor", function () {
         assert.equal(newUser.username, 'Test User 2.5');
       })
     })
+
+
   });
 });
 

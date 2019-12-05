@@ -508,8 +508,8 @@ function createEvent(name, startTime, endTime, room, createdBy) {
 }
 
 //This function will delete the event of the information given.
-function deleteEvent(event) {
-  events.remove(event);
+function deleteEvent(eventId) {
+    return events.remove(eventId);
 }
 
 //This will update the event<id> with the event object given.
