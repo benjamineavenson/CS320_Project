@@ -8,6 +8,8 @@ import { modifyEvent } from '../imports/ui/App.js';
 import { event } from '../imports/ui/App.js';
 import { displayEvents } from '../imports/ui/App';
 
+//To run these tests, invoke the below command when launching meteor:
+//meteor test --full-app --driver-package meteortesting:mocha
 describe("calendar-meteor", function () {
   it("package.json has correct name", async function () {
     const { name } = await import("../package.json");
@@ -62,12 +64,12 @@ describe("calendar-meteor", function () {
         const testEvent = createTestEvent('testEvent3', startTime, endTime, 'test room', 'test user');
         let storedEvent = modifyEventFetch(testEvent);
         const modEvent = createTestEvent('testEvent4', startTime, endTime, 'test room', 'test user');
-        modifyEvent(modEvent, storedEvent[0]._id);
-        storedEvent = events.find(storedEvent[0]._id).fetch();
-        assert.equal(storedEvent[0].name, 'testEvent4');
-        assert.equal(storedEvent[0].room, 'test room');
-        assert.equal(storedEvent[0].createdBy, 'test user');
-        assert.equal(storedEvent[0].lastModifiedBy, 'test user');
+        modifyEvent(modEvent, storedEvent._id);
+        storedEvent = modifyEventFetch(modEvent);
+        assert.equal(storedEvent.name, 'testEvent4');
+        assert.equal(storedEvent.room, 'test room');
+        assert.equal(storedEvent.createdBy, 'test user');
+        assert.equal(storedEvent.lastModifiedBy, 'test user');
       });
     });
     describe('Display events functionality', function(){

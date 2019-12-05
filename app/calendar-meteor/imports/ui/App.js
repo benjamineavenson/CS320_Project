@@ -493,6 +493,8 @@ class user {
 
 //JS database handle functions
 
+//This will create a new event on the server with the parameters.
+// For consistency we could change this function to accept an event object
 function createEvent(name, startTime, endTime, room, createdBy) {
   events.insert({
     name: name,
@@ -505,18 +507,25 @@ function createEvent(name, startTime, endTime, room, createdBy) {
 
 }
 
+//This function will delete the event of the information given.
 function deleteEvent(event) {
   events.remove(event);
 }
 
+//This will update the event<id> with the event object given.
+//Important note: the event given to this function must be an event without the _id parameter
+//Meteor update will not allow documents with _id parameters to be updated;
 function modifyEvent(event, id) {
   events.update(id, event);
 }
 
+//This will return a event with an ID parameter, see note on modify event;
 function modifyEventFetch(event){
-  return events.find(event).fetch();
+  const foundEvents = events.find(event).fetch();
+  return foundEvents[0];
 }
 
+//This function returns an array of events with matching day, month and year values.
 function displayEvents(day) {
   const allEvents = events.find().fetch();
   let dayEvents = [];
@@ -534,6 +543,7 @@ function displayEvents(day) {
 
 //user database functions
 
+//This function will add a user object to the users database
 function addUser(username, password){
   let user = new user();
   user.username = username;
@@ -541,6 +551,7 @@ function addUser(username, password){
   users.insert(user);
 }
 
+//This function will return a user object matching the username parameter value
 function getUser(username) {
   let allUsers = users.find().fetch();
   for (let index = 0; index <= allUsers.length; index++){
@@ -549,8 +560,12 @@ function getUser(username) {
   return null;
 }
 
-function updateUser(user){
-  users.update(user, user._id)
+//This function will update a user object
+//user should be a user object--important note, this cannot be a direct object returned from getUser
+//  You cannot re-insert an object that has a _id parameter.
+//id comes from the user object returned from getUser
+function updateUser(user, id){
+  users.update(user, id)
 }
 
 export{
