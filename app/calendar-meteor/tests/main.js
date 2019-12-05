@@ -68,10 +68,10 @@ describe("calendar-meteor", function () {
         const endTime = new Date(2001, 1, 1, 6);
         createEvent("testEvent3", startTime, endTime, 'test room', 'test user');
         const testEvent = createTestEvent('testEvent3', startTime, endTime, 'test room', 'test user');
-        let storedEvent = modifyEventFetch(testEvent);
+        let storedEvent = events.find(testEvent).fetch()[0];
         const modEvent = createTestEvent('testEvent4', startTime, endTime, 'test room', 'test user');
         modifyEvent(modEvent, storedEvent._id);
-        storedEvent = modifyEventFetch(modEvent);
+        storedEvent = events.find(modEvent).fetch()[0];
         assert.equal(storedEvent.name, 'testEvent4');
         assert.equal(storedEvent.room, 'test room');
         assert.equal(storedEvent.createdBy, 'test user');
@@ -94,6 +94,7 @@ describe("calendar-meteor", function () {
         assert.deepEqual(reDisplay, eventDisplay);
       });
     });
+
     //Event Error handling
     events.remove({}); //clear events database before testing
     describe('Remove Event that does not exist', function() {
@@ -102,9 +103,29 @@ describe("calendar-meteor", function () {
         const endTime = new Date(2001, 1, 1, 2);
         createEvent('deleteMe', startTime, endTime, 'deleteroom', 'me');
         const testEvent = createTestEvent('deleteMe', startTime, endTime, 'deleteroom', 'me');
-        const removeEvent = modifyEventFetch(testEvent);
+        const removeEvent = events.find(testEvent).fetch()[0];
         assert(deleteEvent(removeEvent));
-        assert(!deleteEvent(removeEvent));
+        assert.strictEqual(deleteEvent(removeEvent), 0);
+      });
+    });
+    describe('modifyEventFetch event that does not exist', function() {
+      it('modifyEventFetch should return undefined if no event was found', function () {
+        const startTime = new Date(2001, 1, 1, 1);
+        const endTime = new Date(2001, 1, 1, 2);
+        const testEvent = createTestEvent('whereAmI', startTime, endTime, 'abyss', 'me');
+        createEvent('whereAmI', startTime, endTime, 'abyss', 'me');
+        const dbEvent = events.find(testEvent).fetch()[0];
+        deleteEvent(dbEvent._id);
+        assert.strictEqual(modifyEventFetch(dbEvent._id), undefined);
+      });
+    });
+    describe('modifyEvent that does not exist', function () {
+      it('Should return  if no event exists with the _id', function () {
+        const testEvent = createTestEvent('I dont Exist', new Date(2001), new Date(2002), 'nowhere', 'me');
+        createEvent('I dont Exist', new Date(2001), new Date(2002), 'nowhere', 'me');
+        const dbEvent = events.find(testEvent).fetch()[0];
+        deleteEvent(dbEvent._id);
+        assert.equal(modifyEvent(testEvent, dbEvent._id), false);
       });
     });
 
@@ -133,6 +154,14 @@ describe("calendar-meteor", function () {
       })
     })
 
+    //User Error Handling
+    users.remove({}); //clear users database before testing
+    describe('Add user that already exists', function() {
+      it('Should return false', function() {
+        addUser("testUser", 'password');
+        assert.equal(addUser('testuser', 'otherpassword'), false);
+      })
+    })
 
   });
 });
