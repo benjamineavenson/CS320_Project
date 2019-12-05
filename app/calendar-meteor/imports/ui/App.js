@@ -74,7 +74,6 @@ export default class App extends Component{
 
     const user = getUser(this.state.user.username);
     if(old === user.password && myNew === confirm){
-      console.log("we made it");
       updateUser({
         username: user.username,
         password: myNew,
@@ -100,6 +99,7 @@ export default class App extends Component{
   }
 
   handleNewEvent(){
+
     const eventName = ReactDOM.findDOMNode(this.refs.eventName).value.trim();
     const eventRoom = ReactDOM.findDOMNode(this.refs.eventRoom).value.trim();
 
@@ -146,7 +146,6 @@ export default class App extends Component{
     while(nextDay.getTime() < end.getTime()){
       output.push(nextDay);
       nextDay = new Date(nextDay.getTime() + 1000*60*60*24);
-      console.log("nextDay: "+nextDay);
     }
     if(end.getTime() > start.getTime()){
       output.push(end);

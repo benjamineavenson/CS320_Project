@@ -11,7 +11,6 @@ export default class Day extends Component {
           <p>No Events are Scheduled for this day.</p>
       )
     }
-    console.log(events[0]._id);
     return events.map((event) => (
         <Event key={event._id} id={event._id} name={event.name} room={event.room} startTime={event.startTime} endTime={event.endTime}/>
     ))
