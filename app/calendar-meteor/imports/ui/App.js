@@ -555,18 +555,57 @@ class user {
 
 //JS database handle functions
 
+
+function testConflict(startTime, endTime, room) {
+     const allEvents = events.find().fetch();
+     for (let event in allEvents) {
+       if (allEvents[event].room === room) {
+         if ((allEvents[event].startTime.getTime() < startTime.getTime()) &&
+             (allEvents[event].endTime.getTime() > startTime.getTime())) {
+           return true;
+         } else if ((allEvents[event].startTime.getTime() < endTime.getTime()) &&
+             (allEvents[event].endTime.getTime() > endTime.getTime())) {
+           return true;
+         } else if ((allEvents[event].startTime.getTime() > startTime.getTime()) &&
+             (allEvents[event].endTime.getTime() > endTime.getTime())) {
+           return true;
+         }
+       }
+     }
+     return false;
+}
+
 //This will create a new event on the server with the parameters.
 // For consistency we could change this function to accept an event object
+//Codes:
+//Event successfully added: true
+//Event conflict: -1
+//Event Start time is after end time: 0
+//Event is after current date(year, month, day): -2
 function createEvent(name, startTime, endTime, room, createdBy) {
-  events.insert({
-    name: name,
-    startTime: startTime,
-    endTime: endTime,
-    room: room,
-    createdBy: createdBy,
-    lastModifiedBy: createdBy,
-  });
-
+  const today = new Date();
+  today.setTime(Date.now());
+  if (!testConflict(startTime, endTime, room)) {
+    if (startTime.getTime() >= endTime.getTime()) {
+      return 0; // startTime is after endTime code
+    } else if((today.getDay() > startTime.getDay()) &&
+        (today.getFullYear() > startTime.getFullYear()) &&
+        (today.getMonth() > startTime.getMonth())) {
+      return -2;
+    } else {
+      events.insert({
+        name: name,
+        startTime: startTime,
+        endTime: endTime,
+        room: room,
+        createdBy: createdBy,
+        lastModifiedBy: createdBy,
+      });
+      return true;
+    }
+  } else {
+    return -1; //conflict with another event code
+  }
 }
 
 //This function will delete the event of the information given.

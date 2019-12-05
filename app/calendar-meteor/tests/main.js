@@ -39,8 +39,8 @@ describe("calendar-meteor", function () {
     //Event functions
     describe('Add Event to database:', function(){
       it('Should add event without error', function(){
-        const startTime = new Date(2001, 1,1, 5);
-        const endTime = new Date(2001, 1, 1, 6);
+        const startTime = new Date(3000, 1,1, 5);
+        const endTime = new Date(3000, 1, 1, 6);
         createEvent("testEvent1", startTime, endTime, 'test room', 'test user');
         const testEvent = createTestEvent('testEvent1', startTime, endTime, 'test room', 'test user');
         const storedEvent = events.find(testEvent).fetch();
@@ -52,8 +52,8 @@ describe("calendar-meteor", function () {
     });
     describe('Remove Event in database', function(){
       it('Should remove add and remove an event without error', function(){
-        const startTime = new Date(2001, 1,1, 5);
-        const endTime = new Date(2001, 1, 1, 6);
+        const startTime = new Date(3000, 1,1, 5);
+        const endTime = new Date(3000, 1, 1, 6);
         const testEvent = createTestEvent('testEvent2', startTime, endTime, 'test room', 'test user');
         events.insert(testEvent);
         const eventBefore = events.find(testEvent).fetch();
@@ -64,8 +64,8 @@ describe("calendar-meteor", function () {
     });
     describe('Modify event in database', function(){
       it('Should modify an event and return it to the database', function(){
-        const startTime = new Date(2001, 1,1, 5);
-        const endTime = new Date(2001, 1, 1, 6);
+        const startTime = new Date(3000, 1,1, 5);
+        const endTime = new Date(3000, 1, 1, 6);
         createEvent("testEvent3", startTime, endTime, 'test room', 'test user');
         const testEvent = createTestEvent('testEvent3', startTime, endTime, 'test room', 'test user');
         let storedEvent = events.find(testEvent).fetch()[0];
@@ -80,17 +80,17 @@ describe("calendar-meteor", function () {
     });
     describe('Display events functionality', function(){
       it('Should return a list of events in the given scope of the day', function(){
-        const startTime = new Date(2001, 1,1, 5);
-        const endTime = new Date(2001, 1, 1, 6);
+        const startTime = new Date(3000, 1,1, 5);
+        const endTime = new Date(3000, 1, 1, 6);
         createEvent("testEvent5", startTime, endTime, 'test room', 'test user');
         createEvent("testEvent6", startTime, endTime, 'test room', 'test user');
         createEvent("testEvent7", startTime, endTime, 'test room', 'test user');
         createEvent("testEvent8", startTime, endTime, 'test room', 'test user');
         createEvent("testEvent9", startTime, endTime, 'test room', 'test user');
-        const eventDisplay = displayEvents(new Date(2001, 1, 1));
-        createEvent("testEvent10", new Date(2001, 1, 3, 5),
-            new Date(2001, 1, 3, 6), 'test room', 'test user');
-        const reDisplay = displayEvents(new Date(2001, 1, 1));
+        const eventDisplay = displayEvents(new Date(3000, 1, 1));
+        createEvent("testEvent10", new Date(3000, 1, 3, 5),
+            new Date(3000, 1, 3, 6), 'test room', 'test user');
+        const reDisplay = displayEvents(new Date(3000, 1, 1));
         assert.deepEqual(reDisplay, eventDisplay);
       });
     });
@@ -98,8 +98,8 @@ describe("calendar-meteor", function () {
     //Event Error handling
     describe('Remove Event that does not exist', function() {
       it('Should return false if no event exists', function () {
-        const startTime = new Date(2001, 1, 1, 1);
-        const endTime = new Date(2001, 1, 1, 2);
+        const startTime = new Date(3000, 1, 1, 1);
+        const endTime = new Date(3000, 1, 1, 2);
         createEvent('deleteMe', startTime, endTime, 'deleteroom', 'me');
         const testEvent = createTestEvent('deleteMe', startTime, endTime, 'deleteroom', 'me');
         const removeEvent = events.find(testEvent).fetch()[0];
@@ -109,8 +109,8 @@ describe("calendar-meteor", function () {
     });
     describe('modifyEventFetch event that does not exist', function() {
       it('modifyEventFetch should return undefined if no event was found', function () {
-        const startTime = new Date(2001, 1, 1, 1);
-        const endTime = new Date(2001, 1, 1, 2);
+        const startTime = new Date(3000, 1, 1, 1);
+        const endTime = new Date(3000, 1, 1, 2);
         const testEvent = createTestEvent('whereAmI', startTime, endTime, 'abyss', 'me');
         createEvent('whereAmI', startTime, endTime, 'abyss', 'me');
         const dbEvent = events.find(testEvent).fetch()[0];
@@ -120,11 +120,29 @@ describe("calendar-meteor", function () {
     });
     describe('modifyEvent that does not exist', function () {
       it('Should return  if no event exists with the _id', function () {
-        const testEvent = createTestEvent('I dont Exist', new Date(2001), new Date(2002), 'nowhere', 'me');
-        createEvent('I dont Exist', new Date(2001), new Date(2002), 'nowhere', 'me');
+        const testEvent = createTestEvent('I dont Exist', new Date(3000), new Date(3500), 'nowhere', 'me');
+        createEvent('I dont Exist', new Date(3000), new Date(3500), 'nowhere', 'me');
         const dbEvent = events.find(testEvent).fetch()[0];
         deleteEvent(dbEvent._id);
         assert.equal(modifyEvent(testEvent, dbEvent._id), false);
+      });
+    });
+    describe('Add an event that conflicts with an event already in the system', function() {
+      it('createEvent should return -1 if there was a conflict', function () {
+        createEvent('eventNoConflict', new Date(3000, 1, 1, 1), new Date(3000, 1, 1, 5),
+            'room1', 'me');
+        assert.equal(createEvent('conflictEvent', new Date(3000, 1, 1, 2),
+            new Date(3000, 1, 1, 7), 'room1', 'me'), -1);
+      });
+    });
+    describe('Add an event with startTime greater than endTime', function () {
+      it('Should return code 0 for bad start/end time', function () {
+        assert.equal(createEvent('badStart', new Date(3000), new Date(2000), 'badTimeRoom', 'me'), 0);
+      });
+    });
+    describe('Add an event with startTime equal t0 endTime', function () {
+      it('Should return code 0 for bad start/end time', function () {
+        assert.equal(createEvent('badStart', new Date(2000), new Date(2000), 'badTimeRoom', 'me'), 0);
       });
     });
 
@@ -157,9 +175,20 @@ describe("calendar-meteor", function () {
     describe('Add user that already exists', function() {
       it('Should return false', function() {
         addUser("testUser", 'password');
-        assert.equal(addUser('testuser', 'otherpassword'), false);
+        assert.equal(addUser('testUser', 'otherpassword'), false);
       });
     });
+    describe('Try to modify User that does not exist', function () {
+      it('Should return false if no user is found to modify with given ID', function () {
+        addUser('test', 'pass');
+        const testUser = getUser('test');
+        const newUser = new user();
+        newUser.password = 'pass';
+        newUser.username = 'test2';
+        users.remove({});
+        assert.equal(updateUser(user, testUser._id), false);
+      })
+    })
 
   });
 });
