@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
+import { deleteEvent } from './App.js';
 
 export default class Event extends Component {
+
+  handleDelete(){
+    const event = this.props.key;
+    deleteEvent(event);
+  }
+
+
   render() {
     return (
         <div className="eight wide column">
@@ -19,7 +27,7 @@ export default class Event extends Component {
             </div>
             <div className="column">
               <button className="ui button"><i className="edit icon"></i>Modify Event</button>
-              <button className="ui red button"><i className="close icon"></i>Delete Event</button>
+              <button className="ui red button" onClick={this.handleDelete.bind(this)}><i className="close icon"></i>Delete Event</button>
             </div>
           </div>
         </div>
