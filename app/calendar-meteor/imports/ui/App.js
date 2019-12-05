@@ -577,12 +577,16 @@ function deleteEvent(eventId) {
 //Important note: the event given to this function must be an event without the _id parameter
 //Meteor update will not allow documents with _id parameters to be updated;
 function modifyEvent(event, id) {
-  events.update(id, event);
+  if (events.find(id).fetch()[0] !== undefined) {
+    events.update(id, event);
+    return true;
+  }
+  return false;
 }
 
 //This will return a event with an ID parameter, see note on modify event;
-function modifyEventFetch(event){
-  const foundEvents = events.find(event).fetch();
+function modifyEventFetch(eventId){
+  const foundEvents = events.find(eventId).fetch();
   return foundEvents[0];
 }
 
@@ -606,10 +610,14 @@ function displayEvents(day) {
 
 //This function will add a user object to the users database
 function addUser(username, password){
-  users.insert({
-    username: username,
-    password: password,
-  });
+  if (getUser(username) != null) {
+    users.insert({
+      username: username,
+      password: password,
+    });
+    return true;
+  }
+  return false;
 }
 
 //This function will return a user object matching the username parameter value
@@ -626,7 +634,11 @@ function getUser(username) {
 //  You cannot re-insert an object that has a _id parameter.
 //id comes from the user object returned from getUser
 function updateUser(upUser, id){
-  users.update(id, upUser)
+  if (users.find(id).fetch()[0] === undefined) {
+    users.update(id, upUser);
+    return true;
+  }
+  return false;
 }
 
 export{
