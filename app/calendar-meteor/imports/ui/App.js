@@ -545,17 +545,17 @@ function displayEvents(day) {
 
 //This function will add a user object to the users database
 function addUser(username, password){
-  let user = new user();
-  user.username = username;
-  user.password = password;
-  users.insert(user);
+  users.insert({
+    username: username,
+    password: password
+  });
 }
 
 //This function will return a user object matching the username parameter value
 function getUser(username) {
   let allUsers = users.find().fetch();
-  for (let index = 0; index <= allUsers.length; index++){
-    if (allUsers[index].username === username){return allUsers[index]}
+  for (let user in allUsers){
+    if (allUsers[user].username === username){return allUsers[user]}
   }
   return null;
 }
@@ -564,8 +564,8 @@ function getUser(username) {
 //user should be a user object--important note, this cannot be a direct object returned from getUser
 //  You cannot re-insert an object that has a _id parameter.
 //id comes from the user object returned from getUser
-function updateUser(user, id){
-  users.update(user, id)
+function updateUser(upUser, id){
+  users.update(id, upUser)
 }
 
 export{

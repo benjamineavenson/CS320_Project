@@ -6,7 +6,11 @@ import { deleteEvent } from '../imports/ui/App.js';
 import { modifyEventFetch } from '../imports/ui/App.js';
 import { modifyEvent } from '../imports/ui/App.js';
 import { event } from '../imports/ui/App.js';
+import { user } from '../imports/ui/App';
 import { displayEvents } from '../imports/ui/App';
+import { addUser } from '../imports/ui/App';
+import { getUser } from '../imports/ui/App';
+import { updateUser } from '../imports/ui/App';
 
 //To run these tests, invoke the below command when launching meteor:
 //meteor test --full-app --driver-package meteortesting:mocha
@@ -30,7 +34,7 @@ describe("calendar-meteor", function () {
 
   //Meteor interface tests
   describe('Meteor Database Interface Tests', function(){
-    events.remove({});
+    events.remove({}); //clear events database before testing
     describe('Add Event to database:', function(){
       it('Should add event without error', function(){
         const startTime = new Date(2001, 1,1, 5);
@@ -86,6 +90,30 @@ describe("calendar-meteor", function () {
             new Date(2001, 1, 3, 6), 'test room', 'test user');
         const reDisplay = displayEvents(new Date(2001, 1, 1));
         assert.deepEqual(reDisplay, eventDisplay);
+      });
+    });
+
+    users.remove({}); //clear users database before testing
+    describe('Add user to database', function(){
+      it('Should add a user with no issues', function(){
+        addUser('Test User 1', 'pass1');
+        const gotUser = getUser('Test User 1');
+        const testUser = users.find(gotUser).fetch();
+        assert.deepEqual(gotUser, testUser[0]);
+      });
+    });
+    describe('Modify user in database', function(){
+      it('Should modify a user with no issue', function(){
+        addUser('Test User 2', 'pass2');
+        const gotUser = getUser('Test User 2');
+        const testUser = new user();
+        testUser.username = 'Test User 2.5'
+        testUser.password = gotUser.password;
+        updateUser(testUser, gotUser._id);
+        let newUser = getUser('Test User 2');//should return null
+        assert.notDeepEqual(newUser, gotUser);
+        newUser = getUser('Test User 2.5');
+        assert.equal(newUser.username, 'Test User 2.5');
       })
     })
   });
