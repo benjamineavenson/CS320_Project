@@ -4,8 +4,9 @@ import { deleteEvent } from './App.js';
 export default class Event extends Component {
 
   handleDelete(){
-    const event = this.props.key;
-    deleteEvent(event);
+    const id = this.props.id;
+    deleteEvent(id);
+    this._reactInternalFiber._debugOwner.stateNode.forceUpdate();
   }
 
 
