@@ -16,6 +16,7 @@ export default class App extends Component{
 
     this.state = {
       page: 0,
+      user: null,
       startDay: start,
       endDay: end,
     };
@@ -28,10 +29,57 @@ export default class App extends Component{
   handleLogin(){
     const username = ReactDOM.findDOMNode(this.refs.userInput).value.trim();
     const password = ReactDOM.findDOMNode(this.refs.pwInput).value.trim();
-    //do stuff to compare these with user database
 
-    this.handlePageChange(1);
+    let user = getUser(username);
+    if(user === null){
+      return;
+    }
+    if(user.password === password){
+      this.setState({
+        user: user,
+      });
+      this.handlePageChange(1);
+    }
   }
+
+  handleLogout(){
+    let start = new Date(Date.now());
+    start.setHours(0,0,0,0);
+    let end = new Date(Date.now());
+    end.setHours(0,0,0,0);
+    this.setState({
+      user: null,
+      startDay: start,
+      endDay: end,
+    })
+    this.handlePageChange(0);
+  }
+
+  handleRegister(){
+    const username = ReactDOM.findDOMNode(this.refs.newUser).value.trim();
+    const password = ReactDOM.findDOMNode(this.refs.newPassword).value.trim();
+    const confirm = ReactDOM.findDOMNode(this.refs.confirmNewPassword).value.trim();
+    const email = ReactDOM.findDOMNode(this.refs.newEmail).value.trim();
+
+    if(password === confirm){
+      addUser(username, password);
+      this.handlePageChange(0);
+    }
+  }
+
+  handleChangePassword(){
+    const old = ReactDOM.findDOMNode(this.refs.oldPassword).value.trim();
+    const myNew = ReactDOM.findDOMNode(this.refs.changePassword).value.trim();
+    const confirm = ReactDOM.findDOMNode(this.refs.changePasswordConfirm).value.trim();
+
+    const user = getUser(this.state.user.username);
+    if(old === user.password && myNew === confirm){
+      user.password = myNew;
+      updateUser(user);
+    }
+  }
+
+
 
   handleNewEvent(){
     const eventName = ReactDOM.findDOMNode(this.refs.eventName).value.trim();
@@ -61,7 +109,7 @@ export default class App extends Component{
     const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
 
-    createEvent(eventName, startDate, endDate, eventRoom, "dummyUsername");
+    createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
     this.handlePageChange(1);
   }
 
@@ -117,7 +165,7 @@ export default class App extends Component{
                 <a className="item" onClick={this.handlePageChange.bind(this, 2)}><i className="calendar plus icon"></i> New Event</a>
                 <a className="item" onClick={this.handlePageChange.bind(this, 3)}><i className="user icon"></i> User Profile</a>
                 <div className="ui right menu">
-                  <a className="item" onClick={this.handlePageChange.bind(this, 0)}><i className="logout icon"></i> Logout</a>
+                  <a className="item" onClick={this.handleLogout.bind(this)}><i className="logout icon"></i> Logout</a>
                 </div>
               </div>
               <div className="ui grid">
@@ -241,7 +289,7 @@ export default class App extends Component{
               <div className="ui top attached menu">
                 <a className="item" onClick={this.handlePageChange.bind(this, 3)}><i className="user icon"></i> User Profile</a>
                 <div className="ui right menu">
-                  <a className="item" onClick={this.handlePageChange.bind(this, 0)}><i className="logout icon"></i> Logout</a>
+                  <a className="item" onClick={this.handleLogout.bind(this)}><i className="logout icon"></i> Logout</a>
                 </div>
               </div>
               <div className="sixteen wide column">
@@ -418,21 +466,21 @@ export default class App extends Component{
               <div className="ui top attached menu">
                 <a className="item" onClick={this.handlePageChange.bind(this, 1)}><i className="calendar alternate icon"></i> Event Calendar</a>
                 <div className="ui right menu">
-                  <a className="item" onClick={this.handlePageChange.bind(this, 0)}><i className="logout icon"></i> Logout</a>
+                  <a className="item" onClick={this.handleLogout.bind(this)}><i className="logout icon"></i> Logout</a>
                 </div>
               </div>
               <div className="header">Change My Password</div>
               <div className="ui centered grid">
                 <div className="five wide column">
 
-                  <div className="ui input"><input placeholder="Your old password"/></div>
+                  <div className="ui input"><input ref="oldPassword" placeholder="Your old password"/></div>
 
 
-                  <div className="ui input"><input placeholder="Your new password"/></div>
+                  <div className="ui input"><input ref="changePassword" placeholder="Your new password"/></div>
 
 
-                  <div className="ui input"><input placeholder="Reenter new password"/></div>
-                  <button className="ui button">Submit</button>
+                  <div className="ui input"><input ref="changePasswordConfirm" placeholder="Reenter new password"/></div>
+                  <button onClick={this.handleChangePassword.bind(this)} className="ui button">Submit</button>
 
                 </div>
               </div>
@@ -444,25 +492,25 @@ export default class App extends Component{
               <div className="login header">New User Creation</div>
               <p>
                 <label>User Name: </label>
-                <input placeholder="User Name"/>
+                <input ref="newUser" placeholder="User Name"/>
               </p>
               <p>
                 <label>Email:</label>
-                <input placeholder="Email:"/>
+                <input ref="newEmail" placeholder="Email:"/>
               </p>
               <p>
                 <label>Password:</label>
-                <input placeholder="Password"/>
+                <input ref="newPassword" placeholder="Password"/>
               </p>
               <p>
-                <input placeholder="Confirm"/>
+                <input ref="confirmNewPassword" placeholder="Confirm"/>
               </p>
               <div className="ui two column grid">
                 <div className="column" align="left">
                   <button style={{height: 40 + 'px'}} onClick={this.handlePageChange.bind(this, 0)}>Cancel</button>
                 </div>
                 <div className="column" align="right">
-                  <button style={{height: 40 + 'px'}}>Create User</button>
+                  <button style={{height: 40 + 'px'}} onClick={this.handleRegister.bind(this)}>Create User</button>
                 </div>
               </div>
             </div>
@@ -533,10 +581,10 @@ function displayEvents(day) {
 //user database functions
 
 function addUser(username, password){
-  let user = new user();
-  user.username = username;
-  user.password = password;
-  users.insert(user);
+  users.insert({
+    username: username,
+    password: password,
+  });
 }
 
 function getUser(username) {
