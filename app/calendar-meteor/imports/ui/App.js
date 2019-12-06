@@ -747,7 +747,7 @@ function displayEvents(day) {
   let dayEvents = [];
   for (let event in allEvents) {
     if (allEvents[event].startTime !== undefined) {
-      if (allEvents[event].startTime.getDay() == day.getDay() &&
+      if (allEvents[event].startTime.getDate() == day.getDate() &&
       allEvents[event].startTime.getFullYear() == day.getFullYear() &&
       allEvents[event].startTime.getMonth() == day.getMonth()) {
         dayEvents.push(allEvents[event]);
