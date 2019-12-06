@@ -105,7 +105,6 @@ export default class App extends Component{
   }
 
   handleNewEvent(){
-
     const eventName = ReactDOM.findDOMNode(this.refs.eventName).value.trim();
     const eventRoom = ReactDOM.findDOMNode(this.refs.eventRoom).value.trim();
     const eventMonth = ReactDOM.findDOMNode(this.refs.eventDateMonth).value.trim();
@@ -121,12 +120,12 @@ export default class App extends Component{
     if((eventStartHour === '12') && (eventStartPM === '0')){
       eventStartHour = 0;
     }else if(eventStartPM === '1'){
-      eventStartHour += '12';
+      eventStartHour = parseInt(eventStartHour) + 12;
     }
     if((eventEndHour === '12') && (eventEndPM === '0')){
       eventEndHour = 0;
     }else if(eventEndPM === '1'){
-      eventEndHour += 12;
+      eventEndHour = parseInt(eventEndHour) + 12;
     }
 
     const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
@@ -537,7 +536,7 @@ export default class App extends Component{
                       </select>
                       <select ref="eventStartPM" className="ui dropdown" defaultValue={this.getModStartPM()}>
                         <option value="0">AM</option>
-                        <option value="1" >PM</option>
+                        <option value="1">PM</option>
                       </select>
                     </div>
                   </div>
@@ -577,7 +576,7 @@ export default class App extends Component{
                       </select>
                       <select ref="eventEndPM" className="ui dropdown" defaultValue={this.getModEndPM()}>
                         <option value="0">AM</option>
-                        <option value="1" >PM</option>
+                        <option value="1">PM</option>
                       </select>
                     </div>
                   </div>
