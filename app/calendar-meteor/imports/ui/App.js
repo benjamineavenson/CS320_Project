@@ -666,20 +666,22 @@ class user {
 
 //JS database handle functions
 
-
-function testConflict(startTime, endTime, room) {
+//This function will return true if conflict exists, false if no conflict
+function testConflict(startTime, endTime, room, id) {
      const allEvents = events.find().fetch();
      for (let event in allEvents) {
-       if (allEvents[event].room === room) {
-         if ((allEvents[event].startTime.getTime() < startTime.getTime()) &&
-             (allEvents[event].endTime.getTime() > startTime.getTime())) {
-           return true;
-         } else if ((allEvents[event].startTime.getTime() < endTime.getTime()) &&
-             (allEvents[event].endTime.getTime() > endTime.getTime())) {
-           return true;
-         } else if ((allEvents[event].startTime.getTime() > startTime.getTime()) &&
-             (allEvents[event].endTime.getTime() > endTime.getTime())) {
-           return true;
+       if (id !== allEvents[event]._id) {   //if we are modifying an event, don't compare to self
+         if (allEvents[event].room === room) {  //check if we are in the same room before comparing
+           if ((allEvents[event].startTime.getTime() < startTime.getTime()) &&
+               (allEvents[event].endTime.getTime() > startTime.getTime())) {
+             return true;
+           } else if ((allEvents[event].startTime.getTime() < endTime.getTime()) &&
+               (allEvents[event].endTime.getTime() > endTime.getTime())) {
+             return true;
+           } else if ((allEvents[event].startTime.getTime() > startTime.getTime()) &&
+               (allEvents[event].endTime.getTime() > endTime.getTime())) {
+             return true;
+           }
          }
        }
      }
@@ -696,7 +698,7 @@ function testConflict(startTime, endTime, room) {
 function createEvent(name, startTime, endTime, room, createdBy) {
   const today = new Date();
   today.setTime(Date.now());
-  if (!testConflict(startTime, endTime, room)) {
+  if (!testConflict(startTime, endTime, room, null)) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
     } else if((today.getDay() > startTime.getDay()) &&
@@ -728,9 +730,26 @@ function deleteEvent(eventId) {
 //Important note: the event given to this function must be an event without the _id parameter
 //Meteor update will not allow documents with _id parameters to be updated;
 function modifyEvent(event, id) {
-  if (events.find(id).fetch()[0] !== undefined) {
-    events.update(id, event);
-    return true;
+  const startTime = event.startTime;
+  const endTime = event.endTime;
+  const room = event.room;
+  const today = new Date();
+  today.setTime(Date.now());
+  if (!testConflict(startTime, endTime, room, id)) {
+    if (startTime.getTime() >= endTime.getTime()) {
+      return 0; // startTime is after endTime code
+    } else if((today.getDay() > startTime.getDay()) &&
+        (today.getFullYear() > startTime.getFullYear()) &&
+        (today.getMonth() > startTime.getMonth())) {
+      return -2;
+    } else {
+      if (events.find(id).fetch()[0] !== undefined) {
+        events.update(id, event);
+        return true;
+      }
+    }
+  } else {
+    return -1; //conflict with another event code
   }
   return false;
 }
@@ -747,7 +766,7 @@ function displayEvents(day) {
   let dayEvents = [];
   for (let event in allEvents) {
     if (allEvents[event].startTime !== undefined) {
-      if (allEvents[event].startTime.getDay() == day.getDay() &&
+      if (allEvents[event].startTime.getDate() == day.getDate() &&
       allEvents[event].startTime.getFullYear() == day.getFullYear() &&
       allEvents[event].startTime.getMonth() == day.getMonth()) {
         dayEvents.push(allEvents[event]);
