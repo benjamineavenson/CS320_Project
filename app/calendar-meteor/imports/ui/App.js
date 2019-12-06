@@ -279,7 +279,7 @@ export default class App extends Component{
               <input ref="userInput" placeholder="User Name"/>
               <div className="row">
                 <label>Password:</label>
-                <input ref="pwInput" placeholder="Password"/>
+                <input type='password' ref="pwInput" placeholder="Password"/>
               </div>
               <div className="ui two column grid">
                 <div className="column" align="left">
@@ -416,6 +416,7 @@ export default class App extends Component{
         return(
             <div className="ui container">
               <div className="ui top attached menu">
+                <a className="item" onClick={this.handlePageChange.bind(this, 1)}><i className="calendar alternate icon"></i> Event Calendar</a>
                 <a className="item" onClick={this.handlePageChange.bind(this, 3)}><i className="user icon"></i> User Profile</a>
                 <div className="ui right menu">
                   <a className="item" onClick={this.handleLogout.bind(this)}><i className="logout icon"></i> Logout</a>
