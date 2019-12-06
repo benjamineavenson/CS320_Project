@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { events } from '../database.js';
 import { users } from '../database.js';
 import Day from './Day.js'
+import Event from './Event.js'
 
 export default class App extends Component{
   constructor(props){
@@ -24,6 +25,11 @@ export default class App extends Component{
   }
 
   handlePageChange(pageNum){
+    if(this.state.page === 2){
+      this.setState({
+        eventMod: null,
+      });
+    }
     this.setState({page: pageNum});
   }
 
@@ -102,7 +108,6 @@ export default class App extends Component{
 
     const eventName = ReactDOM.findDOMNode(this.refs.eventName).value.trim();
     const eventRoom = ReactDOM.findDOMNode(this.refs.eventRoom).value.trim();
-
     const eventMonth = ReactDOM.findDOMNode(this.refs.eventDateMonth).value.trim();
     const eventDay = ReactDOM.findDOMNode(this.refs.eventDateDay).value.trim();
     const eventYear = ReactDOM.findDOMNode(this.refs.eventDateYear).value.trim();
@@ -127,7 +132,19 @@ export default class App extends Component{
     const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
 
-    createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
+    if(this.state.eventMod === null){
+      createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
+    }else{
+      modifyEvent({
+        name: eventName,
+        startTime: startDate,
+        endTime: endDate,
+        room: eventRoom,
+        createdBy: this.state.eventMod.createdBy,
+        lastModifiedBy: this.state.user.username,
+      },this.state.eventMod._id);
+    }
+
     this.handlePageChange(1);
   }
 
@@ -151,6 +168,105 @@ export default class App extends Component{
       output.push(end);
     }
     return(output);
+  }
+
+  getModName(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+    return(this.state.eventMod.name);
+  }
+
+  getModRoom(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+    return(this.state.eventMod.room);
+}
+
+  getModMonth(){
+    if(this.state.eventMod === null){
+      return(new Date(Date.now()).getMonth());
+    }
+    return(this.state.eventMod.startTime.getMonth());
+  }
+
+  getModDay(){
+    if(this.state.eventMod === null){
+      return(new Date(Date.now()).getDate());
+    }
+    return(this.state.eventMod.startTime.getDate());
+  }
+
+  getModYear(){
+    if(this.state.eventMod === null){
+      return(new Date(Date.now()).getFullYear());
+    }
+    return(this.state.eventMod.startTime.getFullYear());
+  }
+
+  getModStartHour(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+    let out = this.state.eventMod.startTime.getHours();
+    if(out === 0){
+      return(12);
+    }
+    if(out > 12){
+      return(out-12);
+    }
+    return(out);
+  }
+
+  getModEndHour(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+    let out = this.state.eventMod.endTime.getHours();
+    if(out === 0){
+      return(12);
+    }
+    if(out > 12){
+      return(out-12);
+    }
+    return(out);
+  }
+
+  getModStartMinutes(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+
+    return(this.state.eventMod.startTime.getMinutes());
+  }
+
+  getModEndMinutes(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+
+    return(this.state.eventMod.endTime.getMinutes());
+  }
+
+  getModStartPM(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+    if(this.state.eventMod.startTime.getHours() >= 12){
+      return(1);
+    }
+    return(0);
+  }
+
+  getModEndPM(){
+    if(this.state.eventMod === null){
+      return(null);
+    }
+    if(this.state.eventMod.endTime.getHours() >= 12){
+      return(1);
+    }
+    return(0);
   }
 
   render(){
@@ -189,8 +305,7 @@ export default class App extends Component{
                 <div id="date-select" className="sixteen wide column">
                   <p>Display Events</p>
                   From
-                  <select ref="displayStartMonth" className="ui dropdown">
-                    <option value="">Month</option>
+                  <select defaultValue={new Date(Date.now()).getMonth()} ref="displayStartMonth" className="ui dropdown">
                     <option value="0">January</option>
                     <option value="1">February</option>
                     <option value="2">March</option>
@@ -204,8 +319,7 @@ export default class App extends Component{
                     <option value="10">November</option>
                     <option value="11">December</option>
                   </select>
-                  <select ref="displayStartDay" className="ui dropdown">
-                    <option value="">Day</option>
+                  <select defaultValue={new Date(Date.now()).getDate()} ref="displayStartDay" className="ui dropdown">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -239,11 +353,10 @@ export default class App extends Component{
                     <option value="31">31</option>
                   </select>
                   <div className="ui input">
-                    <input ref="displayStartYear" placeholder="Year"/>
+                    <input ref="displayStartYear" defaultValue={new Date(Date.now()).getFullYear()}/>
                   </div>
                   To
-                  <select ref="displayEndMonth" className="ui dropdown">
-                    <option value="">Month</option>
+                  <select defaultValue={new Date(Date.now()).getMonth()} ref="displayEndMonth" className="ui dropdown">
                     <option value="0">January</option>
                     <option value="1">February</option>
                     <option value="2">March</option>
@@ -257,8 +370,7 @@ export default class App extends Component{
                     <option value="10">November</option>
                     <option value="11">December</option>
                   </select>
-                  <select ref="displayEndDay" className="ui dropdown">
-                    <option value="">Day</option>
+                  <select defaultValue={new Date(Date.now()).getDate()} ref="displayEndDay" className="ui dropdown">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -292,7 +404,7 @@ export default class App extends Component{
                     <option value="31">31</option>
                   </select>
                   <div className="ui input">
-                    <input ref="displayEndYear" placeholder="Year"/>
+                    <input ref="displayEndYear" defaultValue={new Date(Date.now()).getFullYear()}/>
                   </div>
                   <button className="ui basic button" onClick={this.handleDisplayChange.bind(this)}><i className="calendar alternate icon"></i>Display</button>
                 </div>
@@ -318,7 +430,7 @@ export default class App extends Component{
                     <div className="two wide column" style={{textAlign: 'right'}}>Event Name:</div>
                     <div className="ten wide column">
                       <div className="ui input">
-                        <input type="text" ref="eventName" placeholder="Event Name"/>
+                        <input type="text" ref="eventName" placeholder="Event Name" defaultValue={this.getModName()}/>
                       </div>
                     </div>
                   </div>
@@ -328,7 +440,7 @@ export default class App extends Component{
                     <div className="two wide column" style={{textAlign: 'right'}}>Event Room:</div>
                     <div className="ten wide column">
                       <div className="ui input">
-                        <input type="text" ref="eventRoom" placeholder="Room Name"/>
+                        <input type="text" ref="eventRoom" placeholder='Room Name' defaultValue={this.getModRoom()}/>
                       </div>
                     </div>
                   </div>
@@ -337,54 +449,54 @@ export default class App extends Component{
                   <div className="ui grid">
                     <div className="two wide column" style={{textAlign: 'right'}}>Event Date:</div>
                     <div className="ten wide column">
-                      <select ref="eventDateMonth" className="ui dropdown">
-                        <option value="0">January</option>
-                        <option value="1">February</option>
-                        <option value="2">March</option>
-                        <option value="3">April</option>
-                        <option value="4">May</option>
-                        <option value="5">June</option>
-                        <option value="6">July</option>
-                        <option value="7">August</option>
-                        <option value="8">September</option>
-                        <option value="9">October</option>
-                        <option value="10">November</option>
-                        <option value="11">December</option>
+                      <select ref="eventDateMonth" className="ui dropdown" defaultValue={this.getModMonth()}>
+                        <option value="0" >January</option>
+                        <option value="1" >February</option>
+                        <option value="2" >March</option>
+                        <option value="3" >April</option>
+                        <option value="4" >May</option>
+                        <option value="5" >June</option>
+                        <option value="6" >July</option>
+                        <option value="7" >August</option>
+                        <option value="8" >September</option>
+                        <option value="9" >October</option>
+                        <option value="10" >November</option>
+                        <option value="11" >December</option>
                       </select>
-                      <select ref="eventDateDay" className="ui dropdown">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
+                      <select ref="eventDateDay" className="ui dropdown" defaultValue={this.getModDay()}>
+                        <option value="1" >1</option>
+                        <option value="2" >2</option>
+                        <option value="3" >3</option>
+                        <option value="4" >4</option>
+                        <option value="5" >5</option>
+                        <option value="6" >6</option>
+                        <option value="7" >7</option>
+                        <option value="8" >8</option>
+                        <option value="9" >9</option>
+                        <option value="10" >10</option>
+                        <option value="11" >11</option>
+                        <option value="12" >12</option>
+                        <option value="13" >13</option>
+                        <option value="14" >14</option>
+                        <option value="15" >15</option>
+                        <option value="16" >16</option>
+                        <option value="17" >17</option>
+                        <option value="18" >18</option>
+                        <option value="19" >19</option>
+                        <option value="20" >20</option>
+                        <option value="21" >21</option>
+                        <option value="22" >22</option>
+                        <option value="23" >23</option>
+                        <option value="24" >24</option>
+                        <option value="25" >25</option>
+                        <option value="26" >26</option>
+                        <option value="27" >27</option>
+                        <option value="28" >28</option>
+                        <option value="29" >29</option>
+                        <option value="30" >30</option>
+                        <option value="31" >31</option>
                       </select>
-                      <div className="ui input"><input ref="eventDateYear" className="ui input" placeholder="Year" style={{width: 70 + 'px'}}/>
+                      <div className="ui input"><input ref="eventDateYear" className="ui input" defaultValue={this.getModYear()} placeholder='Year' style={{width: 70 + 'px'}}/>
                       </div>
                     </div>
                   </div>
@@ -393,38 +505,38 @@ export default class App extends Component{
                   <div className="ui grid">
                     <div className="two wide column" style={{textAlign: 'right'}}>Start Time:</div>
                     <div className="ten wide column">
-                      <select ref="eventStartHour" className="ui dropdown ">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
+                      <select ref="eventStartHour" className="ui dropdown " defaultValue={this.getModStartHour()}>
+                        <option value="1" >1</option>
+                        <option value="2" >2</option>
+                        <option value="3" >3</option>
+                        <option value="4" >4</option>
+                        <option value="5" >5</option>
+                        <option value="6" >6</option>
+                        <option value="7" >7</option>
+                        <option value="8" >8</option>
+                        <option value="9" >9</option>
+                        <option value="10" >10</option>
+                        <option value="11" >11</option>
+                        <option value="12" >12</option>
                       </select>
                       :
-                      <select ref="eventStartMinute" className="ui dropdown">
-                        <option value="0">00</option>
-                        <option value="5">05</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                        <option value="25">25</option>
-                        <option value="30">30</option>
-                        <option value="35">35</option>
-                        <option value="40">40</option>
-                        <option value="45">45</option>
-                        <option value="50">50</option>
-                        <option value="55">55</option>
+                      <select ref="eventStartMinute" className="ui dropdown" defaultValue={this.getModStartMinutes()}>
+                        <option value="0" >00</option>
+                        <option value="5" >05</option>
+                        <option value="10" >10</option>
+                        <option value="15" >15</option>
+                        <option value="20" >20</option>
+                        <option value="25" >25</option>
+                        <option value="30" >30</option>
+                        <option value="35" >35</option>
+                        <option value="40" >40</option>
+                        <option value="45" >45</option>
+                        <option value="50" >50</option>
+                        <option value="55" >55</option>
                       </select>
-                      <select ref="eventStartPM" className="ui dropdown">
+                      <select ref="eventStartPM" className="ui dropdown" defaultValue={this.getModStartPM()}>
                         <option value="0">AM</option>
-                        <option value="1">PM</option>
+                        <option value="1" >PM</option>
                       </select>
                     </div>
                   </div>
@@ -433,38 +545,38 @@ export default class App extends Component{
                   <div className="ui grid">
                     <div className="two wide column" style={{textAlign: 'right'}}>End Time:</div>
                     <div className="ten wide column">
-                      <select ref="eventEndHour" className="ui dropdown ">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
+                      <select ref="eventEndHour" className="ui dropdown " defaultValue={this.getModEndHour()}>
+                        <option value="1" >1</option>
+                        <option value="2" >2</option>
+                        <option value="3" >3</option>
+                        <option value="4" >4</option>
+                        <option value="5" >5</option>
+                        <option value="6" >6</option>
+                        <option value="7" >7</option>
+                        <option value="8" >8</option>
+                        <option value="9" >9</option>
+                        <option value="10" >10</option>
+                        <option value="11" >11</option>
+                        <option value="12" >12</option>
                       </select>
                       :
-                      <select ref="eventEndMinute" className="ui dropdown">
-                        <option value="0">00</option>
-                        <option value="5">05</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                        <option value="25">25</option>
-                        <option value="30">30</option>
-                        <option value="35">35</option>
-                        <option value="40">40</option>
-                        <option value="45">45</option>
-                        <option value="50">50</option>
-                        <option value="55">55</option>
+                      <select ref="eventEndMinute" className="ui dropdown" defaultValue={this.getModEndMinutes()}>
+                        <option value="0" >00</option>
+                        <option value="5" >05</option>
+                        <option value="10" >10</option>
+                        <option value="15" >15</option>
+                        <option value="20" >20</option>
+                        <option value="25" >25</option>
+                        <option value="30" >30</option>
+                        <option value="35" >35</option>
+                        <option value="40" >40</option>
+                        <option value="45" >45</option>
+                        <option value="50" >50</option>
+                        <option value="55" >55</option>
                       </select>
-                      <select ref="eventEndPM" className="ui dropdown">
+                      <select ref="eventEndPM" className="ui dropdown" defaultValue={this.getModEndPM()}>
                         <option value="0">AM</option>
-                        <option value="1">PM</option>
+                        <option value="1" >PM</option>
                       </select>
                     </div>
                   </div>

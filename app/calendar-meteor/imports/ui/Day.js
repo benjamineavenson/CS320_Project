@@ -12,7 +12,7 @@ export default class Day extends Component {
       )
     }
     return events.map((event) => (
-        <Event key={event._id} id={event._id} name={event.name} room={event.room} startTime={event.startTime} endTime={event.endTime}/>
+        <Event key={event._id} buttons={1} id={event._id} name={event.name} room={event.room} startTime={event.startTime} endTime={event.endTime}/>
     ))
   }
 
