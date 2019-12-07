@@ -109,7 +109,7 @@ export default class App extends Component{
 
     let start = new Date(startYear, startMonth, startDay);
     let end = new Date(endYear, endMonth, endDay);
-    
+
     if(start.getMonth() != startMonth || end.getMonth() != endMonth){
       alert("One of your chosen range bounds is not an actual day.\nPlease make sure you are entering days that exist.");
       return;
@@ -141,6 +141,11 @@ export default class App extends Component{
     let eventEndHour = ReactDOM.findDOMNode(this.refs.eventEndHour).value.trim();
     const eventEndMinute = ReactDOM.findDOMNode(this.refs.eventEndMinute).value.trim();
     const eventEndPM = ReactDOM.findDOMNode(this.refs.eventEndPM).value.trim();
+
+    if(isNaN(eventYear)|| eventYear.length != 4){
+      alert("The year field should contain a valid, 4 digit year.\nPlease reenter a year and try again.");
+      return;
+    }
 
     if((eventStartHour === '12') && (eventStartPM === '0')){
       eventStartHour = 0;
