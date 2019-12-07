@@ -107,12 +107,26 @@ export default class App extends Component{
     const endDay = ReactDOM.findDOMNode(this.refs.displayEndDay).value.trim();
     const endYear = ReactDOM.findDOMNode(this.refs.displayEndYear).value.trim();
 
+    let start = new Date(startYear, startMonth, startDay);
+    let end = new Date(endYear, endMonth, endDay);
+    
+    if(start.getMonth() != startMonth || end.getMonth() != endMonth){
+      alert("One of your chosen range bounds is not an actual day.\nPlease make sure you are entering days that exist.");
+      return;
+    }
+    if(end.getTime() < start.getTime()){
+      alert("Selected start date is after selected start date.\nPlease change your date range and try again");
+      return;
+    }
+    if(endYear - startYear > 5){
+      alert("Selected display range too broad.\nPlease make sure your start and end dates are within 5 years of each other.");
+      return;
+    }
+
     this.setState({
-      startDay: new Date(startYear, startMonth, startDay),
-      endDay: new Date(endYear, endMonth, endDay),
+      startDay: start,
+      endDay: end,
     });
-
-
   }
 
   handleNewEvent(){
@@ -155,7 +169,7 @@ export default class App extends Component{
         alert("Selected date is before today's date.\nPlease change event date.");
       }
     }else{
-      modifyEvent({
+      let code = modifyEvent({
         name: eventName,
         startTime: startDate,
         endTime: endDate,
@@ -163,6 +177,16 @@ export default class App extends Component{
         createdBy: this.state.eventMod.createdBy,
         lastModifiedBy: this.state.user.username,
       },this.state.eventMod._id);
+      console.log(code);
+      if(code === true){
+        this.handlePageChange(1);
+      }else if(code === 0){
+        alert("Event start time is after event end time.\nPlease change event start and/or end time.");
+      }else if(code === -1){
+        alert("An event is already being held in " + eventRoom + "at the same time.\nPlease change event time or room");
+      }else{
+        alert("Selected date is before today's date.\nPlease change event date.");
+      }
     }
   }
 
