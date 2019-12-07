@@ -90,12 +90,21 @@ export default class App extends Component{
     const confirm = ReactDOM.findDOMNode(this.refs.changePasswordConfirm).value.trim();
 
     const user = getUser(this.state.user.username);
-    if(old === user.password && myNew === confirm){
-      updateUser({
-        username: user.username,
-        password: myNew,
-      },
-          user._id);
+    if(old !== user.password){
+      alert("Password incorrect.\nPlease try again.");
+      return;
+    }
+    if(myNew !== confirm){
+      alert("Your password and confirmation password do not match.");
+      return;
+    }
+    if(updateUser({
+          username: user.username,
+          password: myNew,
+        },
+          user._id)) {
+       alert("Password successfully changed.");
+       return;
     }
   }
 
@@ -650,13 +659,13 @@ export default class App extends Component{
               <div className="ui centered grid">
                 <div className="five wide column">
 
-                  <div className="ui input"><input ref="oldPassword" placeholder="Your old password"/></div>
+                  <div className="ui input"><input type="password" ref="oldPassword" placeholder="Your old password"/></div>
 
 
-                  <div className="ui input"><input ref="changePassword" placeholder="Your new password"/></div>
+                  <div className="ui input"><input type="password" ref="changePassword" placeholder="Your new password"/></div>
 
 
-                  <div className="ui input"><input ref="changePasswordConfirm" placeholder="Reenter new password"/></div>
+                  <div className="ui input"><input type="password" ref="changePasswordConfirm" placeholder="Reenter new password"/></div>
                   <button onClick={this.handleChangePassword.bind(this)} className="ui button">Submit</button>
 
                 </div>
