@@ -6,8 +6,12 @@ export default class Event extends Component {
 
   handleDelete(){
     const id = this.props.id;
-    deleteEvent(id);
-    this._reactInternalFiber._debugOwner.stateNode.forceUpdate();
+    const event = modifyEventFetch(id);
+    const name = event.name;
+    if(confirm("Are you sure you wish to delete " + name + "?")){
+      deleteEvent(id);
+      this._reactInternalFiber._debugOwner.stateNode.forceUpdate();
+    }
   }
 
   handleModify(){
