@@ -39,6 +39,7 @@ export default class App extends Component{
 
     let user = getUser(username);
     if(user === null){
+      alert("Username or Password is incorrect.");
       return;
     }
     if(user.password === password){
@@ -46,7 +47,9 @@ export default class App extends Component{
         user: user,
       });
       this.handlePageChange(1);
+      return;
     }
+    alert("Username or Password is incorrect.");
   }
 
   handleLogout(){
