@@ -65,16 +65,22 @@ export default class App extends Component{
     this.handlePageChange(0);
   }
 
-  handleRegister(){
+  handleRegister() {
     const username = ReactDOM.findDOMNode(this.refs.newUser).value.trim();
     const password = ReactDOM.findDOMNode(this.refs.newPassword).value.trim();
     const confirm = ReactDOM.findDOMNode(this.refs.confirmNewPassword).value.trim();
 
-    if(password === confirm){
-      addUser(username, password);
-      this.handlePageChange(0);
+    if (password === confirm) {
+      if(addUser(username, password)) {
+        this.handlePageChange(0);
+      } else {
+        alert("Username " + username + " is already taken.");
+      }
+    } else {
+      alert("Your password and confirmation password do not match.");
     }
   }
+
 
   handleChangePassword(){
     const old = ReactDOM.findDOMNode(this.refs.oldPassword).value.trim();
@@ -628,10 +634,10 @@ export default class App extends Component{
               </p>
               <p>
                 <label>Password:</label>
-                <input ref="newPassword" placeholder="Password"/>
+                <input type="password" ref="newPassword" placeholder="Password"/>
               </p>
               <p>
-                <input ref="confirmNewPassword" placeholder="Confirm"/>
+                <input type="password" ref="confirmNewPassword" placeholder="Confirm"/>
               </p>
               <div className="ui two column grid">
                 <div className="column" align="left">
