@@ -10,6 +10,8 @@ export default class App extends Component{
   constructor(props){
     super(props);
 
+    addUser('admin', 'admin'); //make an admin account for test suite
+
     let start = new Date(Date.now());
     start.setHours(0,0,0,0);
     let end = new Date(Date.now());
@@ -141,7 +143,17 @@ export default class App extends Component{
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
 
     if(this.state.eventMod === null){
-      createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
+      let code = createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
+      console.log(code);
+      if(code === true){
+        this.handlePageChange(1);
+      }else if(code === 0){
+        alert("Event start time is after event end time.\nPlease change event start and/or end time.");
+      }else if(code === -1){
+        alert("An event is already being held in " + eventRoom + "at the same time.\nPlease change event time or room");
+      }else{
+        alert("Selected date is before today's date.\nPlease change event date.");
+      }
     }else{
       modifyEvent({
         name: eventName,
@@ -152,8 +164,6 @@ export default class App extends Component{
         lastModifiedBy: this.state.user.username,
       },this.state.eventMod._id);
     }
-
-    this.handlePageChange(1);
   }
 
 
@@ -703,14 +713,14 @@ function testConflict(startTime, endTime, room, id) {
 //Event successfully added: true
 //Event conflict: -1
 //Event Start time is after end time: 0
-//Event is after current date(year, month, day): -2
+//Event is before current date(year, month, day): -2
 function createEvent(name, startTime, endTime, room, createdBy) {
   const today = new Date();
   today.setTime(Date.now());
   if (!testConflict(startTime, endTime, room, null)) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
-    } else if((today.getDay() > startTime.getDay()) &&
+    } else if((today.getDate() > startTime.getDate()) &&
         (today.getFullYear() > startTime.getFullYear()) &&
         (today.getMonth() > startTime.getMonth())) {
       return -2;
