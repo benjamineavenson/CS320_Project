@@ -78,6 +78,16 @@ describe("calendar-meteor", function () {
         assert.equal(storedEvent.lastModifiedBy, 'test user');
       });
     });
+    describe('modifyEvent that conflicts with own ID', function () {
+      it('Should return  if no event exists with the _id', function () {
+        const testEvent = createTestEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
+        createEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
+        const dbEvent = events.find(testEvent).fetch()[0];
+        const modDbEvent = modifyEventFetch(dbEvent._id);
+        const conflictEvent = createTestEvent('modEvent', new Date(4200), new Date(4500), 'modConflict', 'me');
+        assert.equal(modifyEvent(conflictEvent, modDbEvent._id), true);
+      });
+    });
     describe('Display events functionality', function(){
       it('Should return a list of events in the given scope of the day', function(){
         const startTime = new Date(3000, 1,1, 5);
@@ -140,9 +150,21 @@ describe("calendar-meteor", function () {
         assert.equal(createEvent('badStart', new Date(3000), new Date(2000), 'badTimeRoom', 'me'), 0);
       });
     });
-    describe('Add an event with startTime equal t0 endTime', function () {
+    describe('Add an event with startTime equal to endTime', function () {
       it('Should return code 0 for bad start/end time', function () {
         assert.equal(createEvent('badStart', new Date(2000), new Date(2000), 'badTimeRoom', 'me'), 0);
+      });
+    });
+    describe('modifyEvent that conflicts with existing', function () {
+      it('Should return code -1 for conflict', function () {
+        events.remove({});
+        const testEvent = createTestEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
+        createEvent('Im a future conflict', new Date(3000), new Date(3500), 'modConflict', 'me');
+        createEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
+        const dbEvent = events.find(testEvent).fetch()[0];
+        const modDbEvent = modifyEventFetch(dbEvent._id);
+        const conflictEvent = createTestEvent('modEvent', new Date(3200), new Date(4500), 'modConflict', 'me');
+        assert.equal(modifyEvent(conflictEvent, modDbEvent._id), -1);
       });
     });
 
