@@ -729,14 +729,14 @@ function testConflict(startTime, endTime, room, id) {
      for (let event in allEvents) {
        if (id !== allEvents[event]._id) {   //if we are modifying an event, don't compare to self
          if (allEvents[event].room === room) {  //check if we are in the same room before comparing
-           if ((allEvents[event].startTime.getTime() < startTime.getTime()) &&
-               (allEvents[event].endTime.getTime() > startTime.getTime())) {
+           if ((allEvents[event].startTime.getTime() <= startTime.getTime()) &&
+               (allEvents[event].endTime.getTime() >= startTime.getTime())) { // E1s < E2s < E1s
              return true;
            } else if ((allEvents[event].startTime.getTime() < endTime.getTime()) &&
-               (allEvents[event].endTime.getTime() > endTime.getTime())) {
+               (allEvents[event].endTime.getTime() >= endTime.getTime())) { //E1s < E2e < E1e
              return true;
            } else if ((allEvents[event].startTime.getTime() > startTime.getTime()) &&
-               (allEvents[event].endTime.getTime() > endTime.getTime())) {
+               (allEvents[event].endTime.getTime() >= endTime.getTime())) {
              return true;
            }
          }
