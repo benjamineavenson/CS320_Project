@@ -66,14 +66,14 @@ describe("calendar-meteor", function () {
       it('Should modify an event and return it to the database', function(){
         const startTime = new Date(3000, 1,1, 5);
         const endTime = new Date(3000, 1, 1, 6);
-        createEvent("testEvent3", startTime, endTime, 'test room', 'test user');
-        const testEvent = createTestEvent('testEvent3', startTime, endTime, 'test room', 'test user');
+        createEvent("testEvent3", startTime, endTime, 'modTestRoom', 'test user');
+        const testEvent = createTestEvent('testEvent3', startTime, endTime, 'modTestRoom', 'test user');
         let storedEvent = events.find(testEvent).fetch()[0];
-        const modEvent = createTestEvent('testEvent4', startTime, endTime, 'test room', 'test user');
+        const modEvent = createTestEvent('testEvent4', startTime, endTime, 'modTestRoom', 'test user');
         modifyEvent(modEvent, storedEvent._id);
         storedEvent = events.find(modEvent).fetch()[0];
         assert.equal(storedEvent.name, 'testEvent4');
-        assert.equal(storedEvent.room, 'test room');
+        assert.equal(storedEvent.room, 'modTestRoom');
         assert.equal(storedEvent.createdBy, 'test user');
         assert.equal(storedEvent.lastModifiedBy, 'test user');
       });
@@ -93,14 +93,14 @@ describe("calendar-meteor", function () {
       it('Should return a list of events in the given scope of the day', function(){
         const startTime = new Date(3000, 1,1, 5);
         const endTime = new Date(3000, 1, 1, 6);
-        createEvent("testEvent5", startTime, endTime, 'test room', 'test user');
-        createEvent("testEvent6", startTime, endTime, 'test room', 'test user');
-        createEvent("testEvent7", startTime, endTime, 'test room', 'test user');
-        createEvent("testEvent8", startTime, endTime, 'test room', 'test user');
-        createEvent("testEvent9", startTime, endTime, 'test room', 'test user');
+        createEvent("testEvent5", startTime, endTime, 'test room1', 'test user');
+        createEvent("testEvent6", startTime, endTime, 'test room2', 'test user');
+        createEvent("testEvent7", startTime, endTime, 'test room3', 'test user');
+        createEvent("testEvent8", startTime, endTime, 'test room4', 'test user');
+        createEvent("testEvent9", startTime, endTime, 'test room5', 'test user');
         const eventDisplay = displayEvents(new Date(3000, 1, 1));
         createEvent("testEvent10", new Date(3000, 1, 3, 5),
-            new Date(3000, 1, 3, 6), 'test room', 'test user');
+            new Date(3000, 1, 3, 6), 'test room9', 'test user');
         const reDisplay = displayEvents(new Date(3000, 1, 1));
         assert.deepEqual(reDisplay, eventDisplay);
       });
