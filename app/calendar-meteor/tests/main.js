@@ -11,7 +11,7 @@ import { displayEvents } from '../imports/ui/App';
 import { addUser } from '../imports/ui/App';
 import { getUser } from '../imports/ui/App';
 import { updateUser } from '../imports/ui/App';
-
+import { removePastEvents } from '../imports/ui/App';
 
 //To run these tests, invoke the below command when launching meteor:
 //meteor test --full-app --driver-package meteortesting:mocha
@@ -79,12 +79,13 @@ describe("calendar-meteor", function () {
       });
     });
     describe('modifyEvent that conflicts with own ID', function () {
-      it('Should return  if no event exists with the _id', function () {
-        const testEvent = createTestEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
-        createEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
+      it('Should modify the event and return true', function () {
+        const testEvent = createTestEvent('modEvent', new Date(4000, 1, 1, 2), new Date(4000, 1, 1, 3), 'modConflict', 'me');
+        createEvent('modEvent', new Date(4000, 1, 1, 2), new Date(4000, 1, 1, 3), 'modConflict', 'me');
         const dbEvent = events.find(testEvent).fetch()[0];
         const modDbEvent = modifyEventFetch(dbEvent._id);
-        const conflictEvent = createTestEvent('modEvent', new Date(4200), new Date(4500), 'modConflict', 'me');
+        const conflictEvent = createTestEvent('modEvent', new Date(4000, 1, 1, 2),
+            new Date(4000, 1, 1, 4), 'modConflict', 'me');
         assert.equal(modifyEvent(conflictEvent, modDbEvent._id), true);
       });
     });
@@ -130,8 +131,8 @@ describe("calendar-meteor", function () {
     });
     describe('modifyEvent that does not exist', function () {
       it('Should return  if no event exists with the _id', function () {
-        const testEvent = createTestEvent('I dont Exist', new Date(3000), new Date(3500), 'nowhere', 'me');
-        createEvent('I dont Exist', new Date(3000), new Date(3500), 'nowhere', 'me');
+        const testEvent = createTestEvent('I dont Exist', new Date(3000, 1), new Date(3500, 1), 'nowhere', 'me');
+        createEvent('I dont Exist', new Date(3000, 1), new Date(3500, 1), 'nowhere', 'me');
         const dbEvent = events.find(testEvent).fetch()[0];
         deleteEvent(dbEvent._id);
         assert.equal(modifyEvent(testEvent, dbEvent._id), false);
@@ -158,13 +159,18 @@ describe("calendar-meteor", function () {
     describe('modifyEvent that conflicts with existing', function () {
       it('Should return code -1 for conflict', function () {
         events.remove({});
-        const testEvent = createTestEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
-        createEvent('Im a future conflict', new Date(3000), new Date(3500), 'modConflict', 'me');
-        createEvent('modEvent', new Date(4000), new Date(4500), 'modConflict', 'me');
+        const testEvent = createTestEvent('modEvent', new Date(4000, 1), new Date(4500, 1), 'modConflict', 'me');
+        createEvent('Im a future conflict', new Date(3000, 1), new Date(3500, 1), 'modConflict', 'me');
+        createEvent('modEvent', new Date(4000, 1), new Date(4500, 1), 'modConflict', 'me');
         const dbEvent = events.find(testEvent).fetch()[0];
         const modDbEvent = modifyEventFetch(dbEvent._id);
-        const conflictEvent = createTestEvent('modEvent', new Date(3200), new Date(4500), 'modConflict', 'me');
+        const conflictEvent = createTestEvent('modEvent', new Date(3200, 1), new Date(4500, 1), 'modConflict', 'me');
         assert.equal(modifyEvent(conflictEvent, modDbEvent._id), -1);
+      });
+    });
+    describe('Add event before current date', function () {
+      it('Should return code -2 for past event creation', function () {
+        assert.equal(createEvent('pastEvent', new Date(3000), new Date(4000), 'Past roome', 'me'), -2);
       });
     });
 
@@ -190,6 +196,24 @@ describe("calendar-meteor", function () {
         assert.notDeepEqual(newUser, gotUser);
         newUser = getUser('Test User 2.5');
         assert.equal(newUser.username, 'Test User 2.5');
+      });
+    });
+    describe('Remove old events from database test', function () {
+      it('Should remove all events that are past', function () {
+        const testEvent1 = createTestEvent('oldEvent', new Date(3000), new Date(4000), 'oldRoom', 'me');
+        const testEvent2 = createTestEvent('oldEvent2', new Date(5000), new Date(6000), 'oldRoom2', 'me');
+        const testEvent3 = createTestEvent('goodEvent', new Date(3000, 3), new Date(3000, 5), 'new room', 'me');
+        createEvent('goodEvent', new Date(3000, 3), new Date(3000, 5), 'new room', 'me');
+        events.insert(testEvent1);
+        events.insert(testEvent2);
+        events.insert(testEvent3);
+        const testEvent1db = events.find(testEvent1).fetch()[0];
+        const testEvent2db = events.find(testEvent2).fetch()[0];
+        const testEvent3db = events.find(testEvent3).fetch()[0];
+        removePastEvents();
+        assert.deepEqual(events.find(testEvent1db._id).fetch()[0], undefined);
+        assert.deepEqual(events.find(testEvent2db._id).fetch()[0], undefined);
+        assert.deepEqual(events.find(testEvent3db._id).fetch()[0], testEvent3db);
       });
     });
 

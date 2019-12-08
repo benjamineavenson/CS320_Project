@@ -758,9 +758,7 @@ function createEvent(name, startTime, endTime, room, createdBy) {
   if (!testConflict(startTime, endTime, room, null)) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
-    } else if((today.getDate() > startTime.getDate()) &&
-        (today.getFullYear() > startTime.getFullYear()) &&
-        (today.getMonth() > startTime.getMonth())) {
+    } else if(today.getTime() > startTime.getTime()) {
       return -2;
     } else {
       events.insert({
@@ -833,6 +831,18 @@ function displayEvents(day) {
   return dayEvents;
 }
 
+//This function deletes all events that are before the current date/time.
+function removePastEvents () {
+  const allEvents = events.find().fetch();
+  const today = new Date();
+  today.setTime(Date.now());
+  for (let event in allEvents) {
+    if (allEvents[event].startTime.getTime() < today.getTime()) {
+      events.remove(allEvents[event]._id);
+    }
+  }
+}
+
 //user database functions
 
 //This function will add a user object to the users database
@@ -860,7 +870,7 @@ function getUser(username) {
 //user should be a user object--important note, this cannot be a direct object returned from getUser
 //  You cannot re-insert an object that has a _id parameter.
 //id comes from the user object returned from getUser
-function updateUser(upUser, id){
+function updateUser(upUser, id) {
   if (users.find(id).fetch()[0] !== undefined) {
     users.update(id, upUser);
     return true;
@@ -870,5 +880,5 @@ function updateUser(upUser, id){
 
 export{
   addUser, getUser, updateUser, displayEvents, modifyEvent, modifyEventFetch,
-    createEvent, deleteEvent, event, user
+    createEvent, deleteEvent, event, user, removePastEvents
 }
