@@ -821,17 +821,14 @@ function modifyEvent(event, id) {
   if (!testConflict(startTime, endTime, room, id)) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
-    } else
-      if ((today.getDate() >= startTime.getDate()) &&
-          (today.getFullYear() >= startTime.getFullYear()) &&
-          (today.getMonth() >= startTime.getMonth())) {
-        return -2;
-      } else {
-        if (events.find(id).fetch()[0] !== undefined) {
-          events.update(id, event);
-          return true;
-        }
+    } else if(today.getTime() > endTime.getTime()) {
+      return -2; //event modified to the past code
+    } else {
+      if (events.find(id).fetch()[0] !== undefined) {
+        events.update(id, event);
+        return true; //event modified correctly and without error
       }
+    }
   } else {
     return -1; //conflict with another event code
   }

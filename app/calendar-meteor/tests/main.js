@@ -168,6 +168,17 @@ describe("calendar-meteor", function () {
         assert.equal(modifyEvent(conflictEvent, modDbEvent._id), -1);
       });
     });
+    describe('modify an event to a past date', function () {
+      it('Should return -2', function () {
+        const startTime = new Date(3000, 1,1, 5);
+        const endTime = new Date(3000, 1, 1, 6);
+        createEvent("testEvent3", startTime, endTime, 'modTestRoom', 'test user');
+        const testEvent = createTestEvent('testEvent3', startTime, endTime, 'modTestRoom', 'test user');
+        let storedEvent = events.find(testEvent).fetch()[0];
+        const modEvent = createTestEvent('testEvent4', new Date(2000, 1), new Date(2000, 3), 'modTestRoom', 'test user');
+        assert.strictEqual(modifyEvent(modEvent, storedEvent._id), -2);
+      });
+    });
     describe('Add event before current date', function () {
       it('Should return code -2 for past event creation', function () {
         assert.equal(createEvent('pastEvent', new Date(3000), new Date(4000), 'Past roome', 'me'), -2);
