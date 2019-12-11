@@ -786,7 +786,7 @@ function createEvent(name, startTime, endTime, room, createdBy) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
     } else
-      if (today.getTime() > startTime.getTime()) {
+      if (today.getTime() > endTime.getTime()) {
         return -2;
       } else {
         events.insert({
