@@ -156,8 +156,11 @@ export default class App extends Component {
     const eventEndMinute = ReactDOM.findDOMNode(this.refs.eventEndMinute).value.trim();
     const eventEndPM = ReactDOM.findDOMNode(this.refs.eventEndPM).value.trim();
 
-    if(eventName === "" || eventRoom === "" || eventYear === ""){
+
+
+    if (eventName === "" || eventRoom === "" || eventYear === "") {
       alert("Please make sure all fields are filled out.")
+      return;
     }
 
     if (isNaN(eventYear) || eventYear.length != 4) {
@@ -180,6 +183,11 @@ export default class App extends Component {
 
     const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
+
+    if (startDate.getMonth() != eventMonth){
+      alert("You have selected a day that doesn't exist.\nPlease reselect a day and try again.");
+      return;
+    }
 
     if (this.state.eventMod === null) {
       let code = createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
