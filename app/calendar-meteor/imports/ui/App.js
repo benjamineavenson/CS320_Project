@@ -10,11 +10,11 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    addUser('admin', 'admin'); //make an admin account for test suite
+    //addUser('admin', 'admin'); //make an admin account for test suite
 
 
 
-    let start = new Date(Date.now());
+    let start = new Date(Date.now()); //set the default display range to today
     start.setHours(0, 0, 0, 0);
     let end = new Date(Date.now());
     end.setHours(0, 0, 0, 0);
@@ -29,21 +29,21 @@ export default class App extends Component {
   }
 
   handlePageChange(pageNum) {
-    if (this.state.page === 2) {
+    if (this.state.page === 2) {  //clear out the event that we are modifying if we are leaving the add/modify page
       this.setState({
         eventMod: null,
       });
     }
-    this.setState({ page: pageNum });
+    this.setState({ page: pageNum }); //and then change our page
   }
 
   handleLogin() {
-    const username = ReactDOM.findDOMNode(this.refs.userInput).value.trim();
+    const username = ReactDOM.findDOMNode(this.refs.userInput).value.trim();  //get input
     const password = ReactDOM.findDOMNode(this.refs.pwInput).value.trim();
 
     let user = getUser(username);
     if (user === null) {
-      alert("Username or Password is incorrect.");
+      alert("Username or Password is incorrect.");  //check that we matched a user in the database
       return;
     }
     if (user.password === password) {
@@ -53,10 +53,10 @@ export default class App extends Component {
       this.handlePageChange(1);
       return;
     }
-    alert("Username or Password is incorrect.");
+    alert("Username or Password is incorrect.");  //check that the password matches the one in the db
   }
 
-  handleLogout() {
+  handleLogout() {  //return state to default and goto login
     let start = new Date(Date.now());
     start.setHours(0, 0, 0, 0);
     let end = new Date(Date.now());
@@ -70,12 +70,12 @@ export default class App extends Component {
   }
 
   handleRegister() {
-    const username = ReactDOM.findDOMNode(this.refs.newUser).value.trim();
+    const username = ReactDOM.findDOMNode(this.refs.newUser).value.trim();  //get input
     const password = ReactDOM.findDOMNode(this.refs.newPassword).value.trim();
     const confirm = ReactDOM.findDOMNode(this.refs.confirmNewPassword).value.trim();
 
     if (password === confirm) {
-      if (addUser(username, password)) {
+      if (addUser(username, password)) {  //make sure the username isnt already taken and that the password matches the confirm
         this.handlePageChange(0);
       } else {
         alert("Username " + username + " is already taken.");
@@ -86,11 +86,11 @@ export default class App extends Component {
   }
 
   handleChangePassword() {
-    const old = ReactDOM.findDOMNode(this.refs.oldPassword).value.trim();
+    const old = ReactDOM.findDOMNode(this.refs.oldPassword).value.trim(); //get input
     const myNew = ReactDOM.findDOMNode(this.refs.changePassword).value.trim();
     const confirm = ReactDOM.findDOMNode(this.refs.changePasswordConfirm).value.trim();
 
-    const user = getUser(this.state.user.username);
+    const user = getUser(this.state.user.username); //make sure password matches the one on file and that the new password matches the confirm
     if (old !== user.password) {
       alert("Password incorrect.\nPlease try again.");
       return;
@@ -110,17 +110,17 @@ export default class App extends Component {
   }
 
   handleDisplayChange() {
-    const startMonth = ReactDOM.findDOMNode(this.refs.displayStartMonth).value.trim();
+    const startMonth = ReactDOM.findDOMNode(this.refs.displayStartMonth).value.trim();  //get input
     const startDay = ReactDOM.findDOMNode(this.refs.displayStartDay).value.trim();
     const startYear = ReactDOM.findDOMNode(this.refs.displayStartYear).value.trim();
     const endMonth = ReactDOM.findDOMNode(this.refs.displayEndMonth).value.trim();
     const endDay = ReactDOM.findDOMNode(this.refs.displayEndDay).value.trim();
     const endYear = ReactDOM.findDOMNode(this.refs.displayEndYear).value.trim();
 
-    let start = new Date(startYear, startMonth, startDay);
+    let start = new Date(startYear, startMonth, startDay);  //make some dates
     let end = new Date(endYear, endMonth, endDay);
 
-    if (start.getMonth() != startMonth || end.getMonth() != endMonth) {
+    if (start.getMonth() != startMonth || end.getMonth() != endMonth) { //check for bad input
       alert("One of your chosen range bounds is not an actual day.\nPlease make sure you are entering days that exist.");
       return;
     }
@@ -136,11 +136,11 @@ export default class App extends Component {
       return;
     }
 
-    this.setState({
+    this.setState({ //update the state
       startDay: start,
       endDay: end,
     });
-    removePastEvents();
+    removePastEvents(); //this is when we will remove any events that have passed from the db
   }
 
   handleNewEvent() {
@@ -156,9 +156,9 @@ export default class App extends Component {
     const eventEndMinute = ReactDOM.findDOMNode(this.refs.eventEndMinute).value.trim();
     const eventEndPM = ReactDOM.findDOMNode(this.refs.eventEndPM).value.trim();
 
+  //get a load of input
 
-
-    if (eventName === "" || eventRoom === "" || eventYear === "") {
+    if (eventName === "" || eventRoom === "" || eventYear === "") { //error checking
       alert("Please make sure all fields are filled out.")
       return;
     }
@@ -168,32 +168,32 @@ export default class App extends Component {
       return;
     }
 
-    if ((eventStartHour === '12') && (eventStartPM === '0')) {
+    if ((eventStartHour === '12') && (eventStartPM === '0')) {  //if its 12AM, our hour is 0
       eventStartHour = 0;
     } else
-      if (eventStartPM === '1') {
+      if (eventStartPM === '1') { //if its PM, add 12 to our hour
         eventStartHour = parseInt(eventStartHour) + 12;
       }
-    if ((eventEndHour === '12') && (eventEndPM === '0')) {
+    if ((eventEndHour === '12') && (eventEndPM === '0')) {  //similar checks as above
       eventEndHour = 0;
     } else
       if (eventEndPM === '1') {
         eventEndHour = parseInt(eventEndHour) + 12;
       }
 
-    const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);
+    const startDate = new Date(eventYear, eventMonth, eventDay, eventStartHour, eventStartMinute);  //make dates
     const endDate = new Date(eventYear, eventMonth, eventDay, eventEndHour, eventEndMinute);
 
-    if (startDate.getMonth() != eventMonth){
+    if (startDate.getMonth() != eventMonth){  //error check for bad dates
       alert("You have selected a day that doesn't exist.\nPlease reselect a day and try again.");
       return;
     }
 
-    if (this.state.eventMod === null) {
+    if (this.state.eventMod === null) { //if we arent modifying...
       let code = createEvent(eventName, startDate, endDate, eventRoom, this.state.user.username);
       if (code === true) {
         this.handlePageChange(1);
-      } else
+      } else  //use return code to alert the correct error
         if (code === 0) {
           alert("Event start time is after event end time.\nPlease change event start and/or end time.");
         } else
@@ -203,7 +203,7 @@ export default class App extends Component {
             alert("Selected date and/or start time is before the current date/time.\nPlease change event date/start time.");
           }
     } else {
-      let code = modifyEvent({
+      let code = modifyEvent({  //if we are modifying...
         name: eventName,
         startTime: startDate,
         endTime: endDate,
@@ -214,7 +214,7 @@ export default class App extends Component {
       if (code === true) {
         this.handlePageChange(1);
       } else
-        if (code === 0) {
+        if (code === 0) { //more alerts
           alert("Event start time is after event end time.\nPlease change event start and/or end time.");
         } else
           if (code === -1) {
@@ -225,14 +225,14 @@ export default class App extends Component {
     }
   }
 
-  renderDays() {
+  renderDays() {  //render all of the days between start and end
     const days = this.getDaysBetween(this.state.startDay, this.state.endDay);
     return days.map((day) => (
         <Day key={day.getTime()} date={day}/>
     ));
   }
 
-  getDaysBetween(start, end) {
+  getDaysBetween(start, end) {  //an array of all days within a range
     let output = [];
     output.push(start);
     let nextDay = new Date(start.getTime() + 1000 * 60 * 60 * 24);
@@ -245,6 +245,8 @@ export default class App extends Component {
     }
     return (output);
   }
+
+  //the following functions check first if eventMod is null, if not they return the requested field.
 
   getModName() {
     if (this.state.eventMod === null) {
@@ -345,7 +347,7 @@ export default class App extends Component {
     return (0);
   }
 
-  render() {
+  render() {  //a case statement that determines which page we are on and loads the appropriate JSX
     switch (this.state.page) {
       case 0: //login/index page
         return (

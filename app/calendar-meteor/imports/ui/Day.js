@@ -4,7 +4,7 @@ import { displayEvents } from './App.js';
 
 export default class Day extends Component {
 
-  renderEvents() {
+  renderEvents() {  //get all of the events in the day from db and render the jsx for them
     const events = displayEvents(this.props.date);
     if (events.length === 0) {
       return (
@@ -17,7 +17,7 @@ export default class Day extends Component {
     ));
   }
 
-  render() {
+  render() {  //render the page
     return (
       <div className="sixteen wide column">
         <div className="date-header">{this.props.date.toDateString()}</div>
