@@ -818,9 +818,9 @@ function modifyEvent(event, id) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
     } else
-      if ((today.getDate() > startTime.getDate()) &&
-          (today.getFullYear() > startTime.getFullYear()) &&
-          (today.getMonth() > startTime.getMonth())) {
+      if ((today.getDate() >= startTime.getDate()) &&
+          (today.getFullYear() >= startTime.getFullYear()) &&
+          (today.getMonth() >= startTime.getMonth())) {
         return -2;
       } else {
         if (events.find(id).fetch()[0] !== undefined) {
