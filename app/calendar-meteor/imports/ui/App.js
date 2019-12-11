@@ -793,14 +793,12 @@ function modifyEvent(event, id) {
   if (!testConflict(startTime, endTime, room, id)) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
-    } else if((today.getDay() > startTime.getDay()) &&
-        (today.getFullYear() > startTime.getFullYear()) &&
-        (today.getMonth() > startTime.getMonth())) {
-      return -2;
+    } else if(today.getTime() > endTime.getTime()) {
+      return -2; //event modified to the past code
     } else {
       if (events.find(id).fetch()[0] !== undefined) {
         events.update(id, event);
-        return true;
+        return true; //event modified correctly and without error
       }
     }
   } else {
