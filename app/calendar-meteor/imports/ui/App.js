@@ -12,6 +12,8 @@ export default class App extends Component {
 
     addUser('admin', 'admin'); //make an admin account for test suite
 
+    removePastEvents();
+
     let start = new Date(Date.now());
     start.setHours(0, 0, 0, 0);
     let end = new Date(Date.now());
