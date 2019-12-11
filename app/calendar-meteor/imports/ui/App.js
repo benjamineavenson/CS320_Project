@@ -156,6 +156,10 @@ export default class App extends Component {
     const eventEndMinute = ReactDOM.findDOMNode(this.refs.eventEndMinute).value.trim();
     const eventEndPM = ReactDOM.findDOMNode(this.refs.eventEndPM).value.trim();
 
+    if(eventName === "" || eventRoom === "" || eventYear === ""){
+      alert("Please make sure all fields are filled out.")
+    }
+
     if (isNaN(eventYear) || eventYear.length != 4) {
       alert("The year field should contain a valid, 4 digit year.\nPlease reenter a year and try again.");
       return;
