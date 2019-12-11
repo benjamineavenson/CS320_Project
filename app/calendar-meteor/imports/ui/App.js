@@ -12,7 +12,7 @@ export default class App extends Component {
 
     addUser('admin', 'admin'); //make an admin account for test suite
 
-    removePastEvents();
+
 
     let start = new Date(Date.now());
     start.setHours(0, 0, 0, 0);
@@ -140,6 +140,7 @@ export default class App extends Component {
       startDay: start,
       endDay: end,
     });
+    removePastEvents();
   }
 
   handleNewEvent() {
@@ -198,7 +199,6 @@ export default class App extends Component {
         createdBy: this.state.eventMod.createdBy,
         lastModifiedBy: this.state.user.username,
       }, this.state.eventMod._id);
-      console.log(code);
       if (code === true) {
         this.handlePageChange(1);
       } else
@@ -206,7 +206,7 @@ export default class App extends Component {
           alert("Event start time is after event end time.\nPlease change event start and/or end time.");
         } else
           if (code === -1) {
-            alert("An event is already being held in " + eventRoom + "at the same time.\nPlease change event time or room");
+            alert("An event is already being held in " + eventRoom + " at the same time.\nPlease change event time or room");
           } else {
             alert("Selected date is before today's date.\nPlease change event date.");
           }
@@ -818,7 +818,7 @@ function modifyEvent(event, id) {
     if (startTime.getTime() >= endTime.getTime()) {
       return 0; // startTime is after endTime code
     } else
-      if ((today.getDay() > startTime.getDay()) &&
+      if ((today.getDate() > startTime.getDate()) &&
           (today.getFullYear() > startTime.getFullYear()) &&
           (today.getMonth() > startTime.getMonth())) {
         return -2;
