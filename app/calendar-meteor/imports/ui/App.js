@@ -768,12 +768,12 @@ function testConflict(startTime, endTime, room, id) {
             (allEvents[event].endTime.getTime() >= startTime.getTime())) { // E1s < E2s < E1s
           return true;
         } else
-          if ((allEvents[event].startTime.getTime() < endTime.getTime()) &&
+          if ((allEvents[event].startTime.getTime() <= endTime.getTime()) &&
               (allEvents[event].endTime.getTime() >= endTime.getTime())) { //E1s < E2e < E1e
             return true;
           } else
-            if ((allEvents[event].startTime.getTime() > startTime.getTime()) &&
-                (allEvents[event].endTime.getTime() >= endTime.getTime())) {
+            if ((allEvents[event].startTime.getTime() >= startTime.getTime()) &&
+                (allEvents[event].endTime.getTime() <= endTime.getTime())) {
               return true;
             }
       }
