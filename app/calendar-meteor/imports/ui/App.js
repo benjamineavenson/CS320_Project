@@ -765,7 +765,7 @@ function testConflict(startTime, endTime, room, id) {
     if (id !== allEvents[event]._id) {   //if we are modifying an event, don't compare to self
       if (allEvents[event].room === room) {  //check if we are in the same room before comparing
         if ((allEvents[event].startTime.getTime() <= startTime.getTime()) &&
-            (allEvents[event].endTime.getTime() >= startTime.getTime())) { // E1s < E2s < E1s
+            (allEvents[event].endTime.getTime() >= startTime.getTime())) { // E1s < E2s < E1e
           return true;
         } else
           if ((allEvents[event].startTime.getTime() <= endTime.getTime()) &&
@@ -773,7 +773,7 @@ function testConflict(startTime, endTime, room, id) {
             return true;
           } else
             if ((allEvents[event].startTime.getTime() >= startTime.getTime()) &&
-                (allEvents[event].endTime.getTime() <= endTime.getTime())) {
+                (allEvents[event].endTime.getTime() <= endTime.getTime())) { //E2s > E1s & E1e > E2e
               return true;
             }
       }
@@ -788,7 +788,7 @@ function testConflict(startTime, endTime, room, id) {
 //Event successfully added: true
 //Event conflict: -1
 //Event Start time is after end time: 0
-//Event is before current date(year, month, day): -2
+//Event is before yesterday's date(year, month, day): -2
 function createEvent(name, startTime, endTime, room, createdBy) {
   const today = new Date();
   today.setTime(Date.now() - 1000*60*60*24);
@@ -867,7 +867,7 @@ function displayEvents(day) {
   return dayEvents;
 }
 
-//This function deletes all events that are before the current date/time.
+//This function deletes all events that are before the yesterday's date/time.
 function removePastEvents() {
   const allEvents = events.find().fetch();
   const today = new Date();
